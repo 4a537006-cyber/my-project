@@ -1,0 +1,56 @@
+;************************************************************************
+;
+;
+;	MEGAWIN MLC-SERIES APPLICATION PROGRAM
+;
+;
+;	THIS TEMPLATE IS SUITABLE FOR:
+;
+;	MSE01PC1A
+;
+;
+;
+;************************************************************************
+
+;===================================================================
+;THE PGM_HEAD.H DECLARES SFR LOCATIONS AND MACROS
+;===================================================================
+	.include pgm_head_MSE01PC1A.h
+
+;===================================================================
+;	RAM DECLARATION SECTION
+;EXAMPLE:
+;var1	.ds	1	;DECLARE AN 1-BYTE VARIABLE NAMED 'var1'
+;var2	.ds	4	;DECLARE A 4-BYTE VARIABLE NAMED 'var2'
+;===================================================================
+	.PAGE0
+
+
+	.ENDS
+;=============================================
+;	INTERRUPT VECTOR SECTION
+;=============================================
+	.org	FFFCH
+VECTOR:
+	.dw	reset		;reset
+	.dw	irq_isr		;IRQ interrupt vector
+;=============================================
+;	MAIN PROGRAM
+;=============================================
+	.org	E000H
+reset:
+	system_init			;CHIP SFR INITIALIZATION
+	set_stack_pointer_to 1FFh	;USERS COULD MODIFY THE VALUE TO $1XX
+	clear_RAM_from_00_to BFh	;USERS COULD MODIFY THE VALUE
+
+		
+main_end:
+	jmp main_end
+	.include ADC_MAIN.asm
+;=============================================
+;	INTERRUPT SERVICE ROUTINE
+;=============================================
+irq_isr:
+	rti
+
+

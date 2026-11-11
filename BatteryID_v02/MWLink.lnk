@@ -1,0 +1,9 @@
+version :
+quiet :
+options : high level ,s37
+
+input:D:\YuZhu\06_Project\FA277\BatteryID\BatteryID_v02\MW000.obj
+output:D:\YuZhu\06_Project\FA277\BatteryID\BatteryID_v02\ADC_RampTest.s37
+
+locate:CODE	AT 0000H	*logical mapping default setting
+locate:PAGE0	AT 0000H	*logical mapping default setting

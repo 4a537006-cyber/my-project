@@ -1,0 +1,879 @@
+  Wed Nov 04 11:25:03 2026                                                                                               Page    1
+
+
+
+
+
+
+
+               2500 A.D. 6502 Macro Assembler  -  Version 5.02b
+               ------------------------------------------------
+
+                       Input  Filename : D:\YuZhu\06_Project\FA277\BatteryID\BatteryID_v02\MW000.asb
+                       Output Filename : D:\YuZhu\06_Project\FA277\BatteryID\BatteryID_v02\MW000.OBJ
+                       Listing Has Been Relocated                               
+
+
+    1                     	; ==============================================================================
+    2                     	; FA277 Battery ID  
+    3                     	; ==============================================================================
+    4  00000000             	 
+    5                     	
+    6                     	
+    7                     	
+    8                     	
+    9                     	
+   10                     	;    .include pgm_head_MSE01PC1A.h
+   11  00000000             	    .include FA277_SFR.h
+   12                     	; ******************************************************************************
+   13                     	; *
+   14                     	; * @file        FA277_SFR.h (Merged with pgm_head_MSE01PC1A.h)
+   15                     	; *
+   16                     	; * @brief       This is the header file of the SFR address.
+   17                     	; *
+   18                     	; * @par         Project
+   19                     	; *              FA277
+   20                     	; * @version     v0.01
+   21                     	; * @date        2025/11/13
+   22                     	; * @copyright   Copyright (c) 2019 MegaWin Technology Co., Ltd.
+   23                     	; *              All rights reserved.
+   24                     	; *
+   25                     	; ******************************************************************************
+   26                     	
+   27  00000000             	    .CHIP       R65C02
+   28                     	    .LINKLIST
+   29                     	    .SYMBOLS
+   30                     	    .LIST       ON
+   31                     	    .debug      asm
+   32                     	
+   33         0001        	bit0    .EQU    00000001B
+   34         0002        	bit1    .EQU    00000010B
+   35         0004        	bit2    .EQU    00000100B
+   36         0008        	bit3    .EQU    00001000B
+   37         0010        	bit4    .EQU    00010000B
+   38         0020        	bit5    .EQU    00100000B
+   39         0040        	bit6    .EQU    01000000B
+   40         0080        	bit7    .EQU    10000000B
+   41                     	
+   42                     	;-------------------------------------------------------------
+   43                     	; Interrupt 
+   44                     	;-------------------------------------------------------------
+   45         3001        	IRQ0_EN            EQU 3001h     ;IRQ Enable 0
+   46                     	; (bits in IRQ0_EN)
+  Wed Nov 04 11:25:03 2026                                                                                               Page    2
+
+
+
+
+   47         0007        	EBOF0              .EQU    7
+   48         0006        	EX2                .EQU    6
+   49         0005        	EX1                .EQU    5
+   50         0004        	EX0                .EQU    4
+   51         0003        	ETF1               .EQU    3
+   52         0002        	ETF0               .EQU    2
+   53         0001        	ETI1               .EQU    1
+   54         0000        	ERI1               .EQU    0
+   55                     	
+   56         00E1        	IRQ0_STS           EQU 00E1h     ;IRQ Status 0
+   57                     	; (bits in IRQ0_STS)
+   58         0007        	BOF0               .EQU    7
+   59         0006        	IE2                .EQU    6
+   60         0005        	IE1                .EQU    5
+   61         0004        	IE0                .EQU    4
+   62         0003        	TF1                .EQU    3
+   63         0002        	TF0                .EQU    2
+   64         0001        	TI1i               .EQU    1
+   65         0000        	RI1i               .EQU    0
+   66                     	
+   67         3002        	IRQ1_EN            EQU 3002h     ;IRQ Enable 1
+   68                     	; (bits in IRQ1_EN)
+   69         0007        	EAC1R              .EQU    7
+   70         0006        	EAC1F              .EQU    6
+   71         0005        	EAC0R              .EQU    5
+   72         0004        	EAC0F              .EQU    4
+   73         0003        	EADCI              .EQU    3
+   74         0002        	EMCDF              .EQU    2
+   75         0001        	ERTCF              .EQU    1
+   76         0000        	EWDTF              .EQU    0
+   77                     	
+   78         00E2        	IRQ1_STS           EQU 00E2h     ;IRQ Status 1
+   79                     	; (bits in IRQ1_STS)
+   80         0007        	AC1RF              .EQU    7
+   81         0006        	AC1FF              .EQU    6
+   82         0005        	AC0RF              .EQU    5
+   83         0004        	AC0FF              .EQU    4
+   84         0003        	ADCI               .EQU    3
+   85         0002        	MCDF               .EQU    2
+   86         0001        	RTCF               .EQU    1
+   87         0000        	WDTF               .EQU    0
+   88                     	
+   89         3003        	IRQ2_EN            EQU 3003h     ;IRQ Enable 2
+   90                     	; (bits in IRQ2_EN)
+   91         0003        	ERFW               .EQU    3
+   92         0000        	ERFI               .EQU    0
+   93                     	
+   94         00E3        	IRQ2_STS           EQU 00E3h     ;IRQ Status 2
+   95                     	; (bits in IRQ2_STS)
+   96         0007        	RFACT              .EQU    7
+   97         0006        	RFCYC              .EQU    6
+   98         0003        	RFWKP              .EQU    3
+   99         0002        	RFACK              .EQU    2
+  100         0001        	UCAC               .EQU    1
+  101         0000        	RFINT              .EQU    0
+  102                     	
+  103                     	;-------------------------------------------------------------
+  Wed Nov 04 11:25:03 2026                                                                                               Page    3
+
+
+
+
+  104                     	; Port1 
+  105                     	;-------------------------------------------------------------
+  106         00E4        	P1_PIN             EQU 00E4h     ;Port 1 Pin (R)
+  107                     	; (bits in P1_PIN)
+  108         0003        	P13                .EQU    3
+  109         0002        	P12                .EQU    2
+  110         0001        	P11                .EQU    1
+  111         0000        	P10                .EQU    0
+  112                     	
+  113         00E4        	P1_DAT             EQU 00E4h     ;Port 1 output Data (W)
+  114         00E4        	P1                 EQU 00E4h     ;Port 1 (Alias)
+  115                     	
+  116         3004        	P1M0               EQU 3004h     ;Port 1 Mode Control 0
+  117                     	; (bits in P1M0)
+  118         0007        	P13M1              .EQU    7
+  119         0006        	P13M0              .EQU    6
+  120         0005        	P12M1              .EQU    5
+  121         0004        	P12M0              .EQU    4
+  122         0003        	P11M1              .EQU    3
+  123         0002        	P11M0              .EQU    2
+  124         0001        	P10M1              .EQU    1
+  125         0000        	P10M0              .EQU    0
+  126                     	
+  127                     	;-------------------------------------------------------------
+  128                     	; Port 3 
+  129                     	;-------------------------------------------------------------
+  130         00E5        	P3_PIN             EQU 00E5h     ;Port 3 Pin (R)
+  131                     	; (bits in P3_PIN)
+  132         0003        	P33                .EQU    3
+  133         0002        	P32                .EQU    2
+  134         0001        	P31                .EQU    1
+  135         0000        	P30                .EQU    0
+  136                     	
+  137         00E5        	P3_DAT             EQU 00E5h     ;Port 3 output Data (W)
+  138         00E5        	P3                 EQU 00E5h     ;Port 3 (Alias)
+  139                     	
+  140         3005        	P3M0               EQU 3005h     ;Port 3 Mode Control 0
+  141                     	; (bits in P3M0)
+  142         0007        	P33M1              .EQU    7
+  143         0006        	P33M0              .EQU    6
+  144         0005        	P32M1              .EQU    5
+  145         0004        	P32M0              .EQU    4
+  146         0003        	P31M1              .EQU    3
+  147         0002        	P31M0              .EQU    2
+  148         0001        	P30M1              .EQU    1
+  149         0000        	P30M0              .EQU    0
+  150                     	
+  151                     	;-------------------------------------------------------------
+  152                     	; External Interrupt 
+  153                     	;-------------------------------------------------------------
+  154         3006        	EICR0              EQU 3006h     ;Exteranl INT Control 0
+  155                     	; (bits in EICR0)
+  156         0006        	INT2ET             .EQU    6
+  157         0005        	INT1ET             .EQU    5
+  158         0004        	INT0ET             .EQU    4
+  159         0002        	INT2H              .EQU    2
+  160         0001        	INT1H              .EQU    1
+  Wed Nov 04 11:25:03 2026                                                                                               Page    4
+
+
+
+
+  161         0000        	INT0H              .EQU    0
+  162                     	
+  163         3007        	EICR1              EQU 3007h     ;External INT Control 1
+  164                     	; (bits in EICR1)
+  165         0005        	EI2ES1             .EQU    5
+  166         0004        	EI2ES0             .EQU    4
+  167         0003        	EI1ES1             .EQU    3
+  168         0002        	EI1ES0             .EQU    2
+  169         0001        	EI0ES1             .EQU    1
+  170         0000        	EI0ES0             .EQU    0
+  171                     	
+  172                     	;-------------------------------------------------------------
+  173                     	; Timer 0 
+  174                     	;-------------------------------------------------------------
+  175         00E6        	T0CNT              EQU 00E6h     ;Timer 0 Counter Reg. (R)
+  176         00E7        	T0CTL              EQU 00E7h     ;Timer 0 Control Reg.
+  177                     	; (bits in T0CTL)
+  178         0007        	ENT0               .EQU    7
+  179         0006        	T0RL               .EQU    6
+  180         0002        	T0K2               .EQU    2
+  181         0001        	T0K1               .EQU    1
+  182         0000        	T0K0               .EQU    0
+  183                     	
+  184                     	;-------------------------------------------------------------
+  185                     	; Timer 1 / PWM1 
+  186                     	;-------------------------------------------------------------
+  187         00E8        	T1CNT              EQU 00E8h     ;Timer 1 Counter Reg. (R)
+  188         00E9        	T1CTL              EQU 00E9h     ;Timer 1 Control Reg.
+  189                     	; (bits in T1CTL)
+  190         0007        	ENT1               .EQU    7
+  191         0006        	T1RL               .EQU    6
+  192         0004        	T1M1               .EQU    4
+  193         0003        	T1M0               .EQU    3
+  194         0002        	T1K2               .EQU    2
+  195         0001        	T1K1               .EQU    1
+  196         0000        	T1K0               .EQU    0
+  197                     	
+  198                     	;-------------------------------------------------------------
+  199                     	; PWM Control 
+  200                     	;-------------------------------------------------------------
+  201         3008        	TCON               EQU 3008h     ;Timer Control
+  202                     	; (bits in TCON)
+  203         0007        	T1ORWE             .EQU    7
+  204         0006        	T1OR               .EQU    6
+  205         0005        	T0ORWE             .EQU    5
+  206         0004        	T0OR               .EQU    4
+  207         0003        	T1CKOE             .EQU    3
+  208         0002        	T0CKOE             .EQU    2
+  209         0001        	EPWM1              .EQU    1
+  210         0000        	EPWM0              .EQU    0
+  211                     	
+  212         3009        	PWM0DA             EQU 3009h     ;PWM 0 Data
+  213                     	
+  214                     	;-------------------------------------------------------------
+  215                     	; UART Interface 
+  216                     	;-------------------------------------------------------------
+  217         3030        	S1CON              EQU 3030h     ;Serial 1 Control
+  Wed Nov 04 11:25:03 2026                                                                                               Page    5
+
+
+
+
+  218                     	; (bits in S1CON)
+  219         0007        	SM01               .EQU    7
+  220         0006        	SM11               .EQU    6
+  221         0005        	SM21               .EQU    5
+  222         0004        	REN1               .EQU    4
+  223         0003        	TB81               .EQU    3
+  224         0002        	RB81               .EQU    2
+  225         0001        	TI1                .EQU    1
+  226         0000        	RI1                .EQU    0
+  227                     	
+  228         3031        	S1BUF              EQU 3031h     ;Serial 1 Buffer
+  229         3032        	S1BRT              EQU 3032h     ;S1 Baud Rate Timer
+  230         3033        	S1BRC              EQU 3033h     ;S1 Baud Rate Counter
+  231         3034        	S1CFG              EQU 3034h     ;S1 Configuration
+  232                     	; (bits in S1CFG)
+  233         0007        	SM31               .EQU    7
+  234         0006        	S1MOD3             .EQU    6
+  235         0005        	S1DOR              .EQU    5
+  236         0004        	S1TR               .EQU    4
+  237         0003        	S1MOD1             .EQU    3
+  238         0002        	S1TX16             .EQU    2
+  239         0001        	S1CKOE             .EQU    1
+  240         0000        	S1TME              .EQU    0
+  241                     	
+  242                     	;-------------------------------------------------------------
+  243                     	; ADC Module 
+  244                     	;-------------------------------------------------------------
+  245         3020        	ADCON              EQU 3020h     ;ADC Control
+  246                     	; (bits in ADCON)
+  247         0007        	ADCEN              .EQU    7
+  248         0006        	ADCS               .EQU    6
+  249         0005        	IVREN              .EQU    5
+  250         0004        	ADTM0              .EQU    4
+  251         0003        	CHS3               .EQU    3
+  252         0002        	CHS2               .EQU    2
+  253         0001        	CHS1               .EQU    1
+  254         0000        	CHS0               .EQU    0
+  255                     	
+  256         3021        	ADCDL              EQU 3021h     ;ADC Data Low Byte
+  257         3022        	ADCDH              EQU 3022h     ;ADC Data High Byte
+  258                     	
+  259         3023        	ADCFG0             EQU 3023h     ;ADC Configuration 0
+  260                     	; (bits in ADCFG0)
+  261         0007        	ADCKS2             .EQU    7
+  262         0006        	ADCKS1             .EQU    6
+  263         0005        	ADCKS0             .EQU    5
+  264         0004        	ADRJ               .EQU    4
+  265         0003        	ADHS               .EQU    3
+  266         0002        	IAOFF              .EQU    2
+  267         0001        	AAOFF              .EQU    1
+  268         0000        	AAHLT              .EQU    0
+  269                     	
+  270         3024        	ADCFG1             EQU 3024h     ;ADC Configuration 1
+  271                     	; (bits in ADCFG1)
+  272         0007        	SHT7               .EQU    7
+  273         0006        	SHT6               .EQU    6
+  274         0005        	SHT5               .EQU    5
+  Wed Nov 04 11:25:03 2026                                                                                               Page    6
+
+
+
+
+  275         0004        	SHT4               .EQU    4
+  276         0003        	SHT3               .EQU    3
+  277         0002        	SHT2               .EQU    2
+  278         0001        	SHT1               .EQU    1
+  279         0000        	SHT0               .EQU    0
+  280                     	
+  281         3025        	ADCFG2             EQU 3025h     ;ADC Configuration 2
+  282                     	
+  283                     	;-------------------------------------------------------------
+  284                     	; AC0 Module 
+  285                     	;-------------------------------------------------------------
+  286         3028        	AC0CON             EQU 3028h     ;AC0 Control
+  287                     	; (bits in AC0CON)
+  288         0007        	AC0LP              .EQU    7
+  289         0006        	AC0PD              .EQU    6
+  290         0005        	AC0OUT             .EQU    5
+  291         0003        	AC0EN              .EQU    3
+  292                     	
+  293         3029        	AC0CFG0            EQU 3029h     ;AC0 Configuration 0
+  294                     	; (bits in AC0CFG0)
+  295         0007        	AC0CS3             .EQU    7
+  296         0006        	AC0CS2             .EQU    6
+  297         0005        	AC0CS1             .EQU    5
+  298         0004        	AC0CS0             .EQU    4
+  299         0003        	AC0TD1             .EQU    3
+  300         0002        	AC0TD0             .EQU    2
+  301         0001        	SWE0               .EQU    1
+  302         0000        	ASE0               .EQU    0
+  303                     	
+  304         302A        	AC0CFG1            EQU 302Ah     ;AC0 Configuration 1
+  305                     	; (bits in AC0CFG1)
+  306         0007        	R4HS3              .EQU    7
+  307         0006        	R4HS2              .EQU    6
+  308         0005        	R4HS1              .EQU    5
+  309         0004        	R4HS0              .EQU    4
+  310         0003        	R3HEN              .EQU    3
+  311         0002        	R2HEN              .EQU    2
+  312         0001        	AC0NIH             .EQU    1
+  313         0000        	AC0HE              .EQU    0
+  314                     	
+  315         302B        	AC0CFG2            EQU 302Bh     ;AC0 Configuration 2
+  316                     	; (bits in AC0CFG2)
+  317         0007        	R4LS3              .EQU    7
+  318         0006        	R4LS2              .EQU    6
+  319         0005        	R4LS1              .EQU    5
+  320         0004        	R4LS0              .EQU    4
+  321         0003        	R3LEN              .EQU    3
+  322         0002        	R2LEN              .EQU    2
+  323         0001        	AC0NIL             .EQU    1
+  324         0000        	AC0LE              .EQU    0
+  325                     	
+  326                     	;-------------------------------------------------------------
+  327                     	; AC1 Module 
+  328                     	;-------------------------------------------------------------
+  329         302C        	AC1CON             EQU 302Ch     ;AC1 Control
+  330                     	; (bits in AC1CON)
+  331         0007        	AC1LP              .EQU    7
+  Wed Nov 04 11:25:03 2026                                                                                               Page    7
+
+
+
+
+  332         0006        	AC1PD              .EQU    6
+  333         0005        	AC1OUT             .EQU    5
+  334         0003        	AC1EN              .EQU    3
+  335         0001        	RL1E               .EQU    1
+  336         0000        	CCEN               .EQU    0
+  337                     	
+  338         302D        	AC1CFG0            EQU 302Dh     ;AC1 Configuration 0
+  339                     	; (bits in AC1CFG0)
+  340         0007        	AC1CS3             .EQU    7
+  341         0006        	AC1CS2             .EQU    6
+  342         0005        	AC1CS1             .EQU    5
+  343         0004        	AC1CS0             .EQU    4
+  344         0003        	AC1TD1             .EQU    3
+  345         0002        	AC1TD0             .EQU    2
+  346         0000        	ASE1               .EQU    0
+  347                     	
+  348         302E        	AC1CFG1            EQU 302Eh     ;AC1 Configuration 1
+  349                     	; (bits in AC1CFG1)
+  350         0007        	R2S3               .EQU    7
+  351         0006        	R2S2               .EQU    6
+  352         0005        	R2S1               .EQU    5
+  353         0004        	R2S0               .EQU    4
+  354                     	
+  355                     	;-------------------------------------------------------------
+  356                     	; Auxiliary Registers (AUXR)
+  357                     	;-------------------------------------------------------------
+  358         303F        	AUXR0              EQU 303Fh     ;Auxiliary Register 0
+  359                     	; (bits in AUXR0)
+  360         0007        	PSS11              .EQU    7
+  361         0006        	PSS10              .EQU    6
+  362         0005        	PSEI21             .EQU    5
+  363         0004        	PSEI20             .EQU    4
+  364         0003        	PSEI11             .EQU    3
+  365         0002        	PSEI10             .EQU    2
+  366         0001        	PSEI01             .EQU    1
+  367         0000        	PSEI00             .EQU    0
+  368                     	
+  369         303E        	AUXR1              EQU 303Eh     ;Auxiliary Register 1
+  370                     	; (bits in AUXR1)
+  371         0007        	PSRO1              .EQU    7
+  372         0006        	PSRO0              .EQU    6
+  373         0004        	PSS1CO             .EQU    4
+  374         0003        	PSS1MI             .EQU    3
+  375         0002        	PST1               .EQU    2
+  376         0001        	PSPWM1             .EQU    1
+  377         0000        	PSPWM0             .EQU    0
+  378                     	
+  379         303D        	AUXR2              EQU 303Dh     ;Auxiliary Register 2
+  380                     	; (bits in AUXR2)
+  381         0001        	BO1O               .EQU    1
+  382         0000        	BO0O               .EQU    0
+  383                     	
+  384                     	;-------------------------------------------------------------
+  385                     	; Hardware Options (ORxx)
+  386                     	;-------------------------------------------------------------
+  387         3100        	OR00               EQU 3100h
+  388                     	; (bits in OR00)
+  Wed Nov 04 11:25:03 2026                                                                                               Page    8
+
+
+
+
+  389         0004        	NLOCK              .EQU    4
+  390         0000        	OSCS               .EQU    0
+  391                     	
+  392         3101        	OR01               EQU 3101h
+  393                     	; (bits in OR01)
+  394         0007        	WDTWFWP            .EQU    7
+  395         0006        	NSWDT              .EQU    6
+  396         0005        	HWENW              .EQU    5
+  397         0004        	WRENO              .EQU    4
+  398         0003        	HWIDL              .EQU    3
+  399         0002        	HWPS2              .EQU    2
+  400         0001        	HWPS1              .EQU    1
+  401         0000        	HWPS0              .EQU    0
+  402                     	
+  403         3102        	OR2                EQU 3102h            
+  404         3103        	OR3                EQU 3103h                          
+  405         3104        	OR4                EQU 3104h                         
+  406         3105        	OR5                EQU 3105h                
+  407         3106        	OR6                EQU 3106h           
+  408         3107        	OR7                EQU 3107h
+  409                     	
+  410                     	;-------------------------------------------------------------
+  411                     	; NFC Buffer 
+  412                     	;-------------------------------------------------------------
+  413         3040        	RF_ID0             EQU 3040h     ;RF UID0
+  414         3041        	RF_ID1             EQU 3041h     ;RF UID1
+  415         3042        	RF_ID2             EQU 3042h     ;RF UID2
+  416         3043        	RF_ID3             EQU 3043h     ;RF UID3
+  417         3044        	RF_ID4             EQU 3044h     ;RF UID4
+  418         3045        	RF_ID5             EQU 3045h     ;RF UID5
+  419         3046        	RF_ID6             EQU 3046h     ;RF UID6
+  420         3047        	RF_INIT            EQU 3047h     ;RF Configuration
+  421                     	
+  422         3060        	RF_CMD             EQU 3060h     ;RF Command
+  423         3061        	RF_Page            EQU 3061h     ;RF Page
+  424         3062        	RF_Parm            EQU 3062h     ;RF CMD Parameter
+  425         3063        	RF_STS             EQU 3063h     ;RF Status
+  426         3064        	RF_DA0             EQU 3064h     ;RF Data Byte 0
+  427         3065        	RF_DA1             EQU 3065h     ;RF Data Byte 1
+  428         3066        	RF_DA2             EQU 3066h     ;RF Data Byte 2
+  429         3067        	RF_DA3             EQU 3067h     ;RF Data Byte 3
+  430         3068        	RF_DA4             EQU 3068h     ;RF Data Byte 4
+  431         3069        	RF_DA5             EQU 3069h     ;RF Data Byte 5
+  432         306A        	RF_DA6             EQU 306Ah     ;RF Data Byte 6
+  433         306B        	RF_DA7             EQU 306Bh     ;RF Data Byte 7
+  434         306C        	RF_DA8             EQU 306Ch     ;RF Data Byte 8
+  435         306D        	RF_DA9             EQU 306Dh     ;RF Data Byte 9
+  436         306E        	RF_DA10            EQU 306Eh     ;RF Data Byte 10
+  437         306F        	RF_DA11            EQU 306Fh     ;RF Data Byte 11
+  438         3070        	RF_DA12            EQU 3070h     ;RF Data Byte 12
+  439         3071        	RF_DA13            EQU 3071h     ;RF Data Byte 13
+  440         3072        	RF_DA14            EQU 3072h     ;RF Data Byte 14
+  441         3073        	RF_DA15            EQU 3073h     ;RF Data Byte 15
+  442                     	
+  443                     	;-------------------------------------------------------------
+  444                     	; GPL / CRC 
+  445                     	;-------------------------------------------------------------
+  Wed Nov 04 11:25:03 2026                                                                                               Page    9
+
+
+
+
+  446         00EA        	BOREV              EQU 00EAh     ;Bit Order Reversed
+  447         00EB        	CRC0DA             EQU 00EBh     ;CRC0 Data Register
+  448         300C        	CRC0CR             EQU 300Ch     ;CRC0 Control 0
+  449                     	; (bits in CRC0CR)
+  450         0007        	PAR                .EQU    7
+  451         0001        	CRCDS1             .EQU    1
+  452         0000        	CRCDS0             .EQU    0
+  453                     	
+  454                     	;-------------------------------------------------------------
+  455                     	; MDU 
+  456                     	;-------------------------------------------------------------
+  457         3036        	MDU_A              EQU 3036h     ;MDU A Register
+  458         3037        	MDU_B              EQU 3037h     ;MDU B Register
+  459         3038        	MDUCR              EQU 3038h     ;MDU Control Register
+  460                     	; (bits in MDUCR)
+  461         0002        	MDUM0              .EQU    2
+  462         0001        	MDUST              .EQU    1
+  463         0000        	MDUS               .EQU    0
+  464                     	
+  465                     	;-------------------------------------------------------------
+  466                     	; AES128 
+  467                     	;-------------------------------------------------------------
+  468         00EF        	AES_CR0            EQU 00EFh     ;AES Control 0
+  469                     	; (bits in AES_CR0)
+  470         0007        	AES_RST            .EQU    7
+  471         0003        	AES_M1             .EQU    3
+  472         0002        	AES_M0             .EQU    2
+  473         0001        	ENCPT              .EQU    1
+  474         0000        	AES_STR            .EQU    0
+  475                     	
+  476         00F0        	AES_DA0            EQU 00F0h     ;AES Data Byte 0
+  477         00F1        	AES_DA1            EQU 00F1h     ;AES Data Byte 1
+  478         00F2        	AES_DA2            EQU 00F2h     ;AES Data Byte 2
+  479         00F3        	AES_DA3            EQU 00F3h     ;AES Data Byte 3
+  480         00F4        	AES_DA4            EQU 00F4h     ;AES Data Byte 4
+  481         00F5        	AES_DA5            EQU 00F5h     ;AES Data Byte 5
+  482         00F6        	AES_DA6            EQU 00F6h     ;AES Data Byte 6
+  483         00F7        	AES_DA7            EQU 00F7h     ;AES Data Byte 7
+  484         00F8        	AES_DA8            EQU 00F8h     ;AES Data Byte 8
+  485         00F9        	AES_DA9            EQU 00F9h     ;AES Data Byte 9
+  486         00FA        	AES_DA10           EQU 00FAh     ;AES Data Byte 10
+  487         00FB        	AES_DA11           EQU 00FBh     ;AES Data Byte 11
+  488         00FC        	AES_DA12           EQU 00FCh     ;AES Data Byte 12
+  489         00FD        	AES_DA13           EQU 00FDh     ;AES Data Byte 13
+  490         00FE        	AES_DA14           EQU 00FEh     ;AES Data Byte 14
+  491         00FF        	AES_DA15           EQU 00FFh     ;AES Data Byte 15
+  492                     	
+  493                     	;-------------------------------------------------------------
+  494                     	; In Application Programming (IAP) 
+  495                     	;-------------------------------------------------------------
+  496         300A        	IAP_PR             EQU 300Ah     ;IAP Write Protect Key (W)
+  497                     	; (bits in IAP_PR)
+  498         0007        	IPR7               .EQU    7
+  499         0006        	IPR6               .EQU    6
+  500         0005        	IPR5               .EQU    5
+  501         0004        	IPR4               .EQU    4
+  502         0003        	IPR3               .EQU    3
+  Wed Nov 04 11:25:03 2026                                                                                               Page   10
+
+
+
+
+  503         0002        	IPR2               .EQU    2
+  504         0001        	IPR1               .EQU    1
+  505         0000        	IPR0               .EQU    0
+  506                     	
+  507         300B        	IFMT               EQU 300Bh     ;IAP Command
+  508                     	; (bits in IFMT)
+  509         0007        	IAPEN              .EQU    7
+  510         0001        	IMS1               .EQU    1
+  511         0000        	IMS0               .EQU    0
+  512                     	
+  513                     	;-------------------------------------------------------------
+  514                     	; Protect Write Key 
+  515                     	;-------------------------------------------------------------
+  516         300F        	PWPR               EQU 300Fh     ;Proteck Write Pattern (W)
+  517                     	; (bits in PWPR)
+  518         0007        	PR7                .EQU    7
+  519         0006        	PR6                .EQU    6
+  520         0005        	PR5                .EQU    5
+  521         0004        	PR4                .EQU    4
+  522         0003        	PR3                .EQU    3
+  523         0002        	PR2                .EQU    2
+  524         0001        	PR1                .EQU    1
+  525         0000        	PR0                .EQU    0
+  526                     	
+  527                     	;-------------------------------------------------------------
+  528                     	; Power & Clock 
+  529                     	;-------------------------------------------------------------
+  530         3010        	PWR_CTL            EQU 3010h     ;Power Control
+  531                     	; (bits in PWR_CTL)
+  532         0007        	SCKS2              .EQU    7
+  533         0006        	SCKS1              .EQU    6
+  534         0005        	SCKS0              .EQU    5
+  535         0004        	HSE                .EQU    4
+  536         0003        	OSCS1              .EQU    3
+  537         0002        	OSCS0              .EQU    2
+  538         0001        	STOP               .EQU    1
+  539         0000        	HALT               .EQU    0
+  540                     	
+  541         3011        	CK_CTL             EQU 3011h     ;Clock Control
+  542                     	; (bits in CK_CTL)
+  543         0007        	ILDS               .EQU    7
+  544         0006        	NFCE               .EQU    6
+  545         0003        	MCDX               .EQU    3
+  546         0002        	MCDE               .EQU    2
+  547         0001        	XTEN               .EQU    1
+  548         0000        	IHEN               .EQU    0
+  549                     	
+  550         3012        	MCK_CTL            EQU 3012h     ;Module Clock Control
+  551                     	; (bits in MCK_CTL)
+  552         0007        	AESCE              .EQU    7
+  553         0006        	GPLCE              .EQU    6
+  554         0005        	AC1CE              .EQU    5
+  555         0004        	AC0CE              .EQU    4
+  556         0003        	ADCKE              .EQU    3
+  557         0002        	URCE               .EQU    2
+  558         0001        	TM1CE              .EQU    1
+  559         0000        	TM0CE              .EQU    0
+  Wed Nov 04 11:25:03 2026                                                                                               Page   11
+
+
+
+
+  560                     	
+  561         3013        	CKS_STS            EQU 3013h     ;Clock Switch Status (R)
+  562                     	; (bits in CKS_STS)
+  563         0007        	XTOR               .EQU    7
+  564         0003        	CKST3              .EQU    3
+  565         0002        	CKST2              .EQU    2
+  566         0001        	CKST1              .EQU    1
+  567         0000        	CKST0              .EQU    0
+  568                     	
+  569         301E        	PWR_CR1            EQU 301Eh     ;Power Control 1
+  570                     	; (bits in PWR_CR1)
+  571  00000000             	BO1
+  572                     	
+  573                     	
+  574                     	;=== SFR ===
+  575                     	;IRQ1_EN   .EQU    3002h
+  576                     	
+  577                     	;P1M0    .EQU    3004h
+  578                     	;  xyM1  xyM0  Port Mode
+  579                     	;    0    0    Analog Input Only (default)
+  580                     	;    0    1    Push-Pull Output
+  581                     	;    1    0    Open-Drain Output / General Digital Input (Port Pin set to “1”)
+  582                     	;    1    1    Open-Drain with Pull-up resistor
+  583                     	;P3M0    .EQU    3005h
+  584                     	;  xyM1  xyM0  Port Mode
+  585                     	;    0    0    Analog I/O
+  586                     	;    0    1    Push-Pull Output
+  587                     	;    1    0    Open-Drain Output / General Digital Input (Port Pin set to “1”)
+  588                     	;    1    1    Quasi-Bidirectional (default)
+  589                     	
+  590         0000        	Px0_AN  .EQU    00000000B   ;00h
+  591         0001        	Px0_PP  .EQU    00000001B   ;01h
+  592         0002        	Px0_OD  .EQU    00000010B   ;02h
+  593         0003        	Px0_QB  .EQU    00000011B   ;03h
+  594         0000        	Px1_AN  .EQU    00000000B   ;00h
+  595         0004        	Px1_PP  .EQU    00000100B   ;04h
+  596         0008        	Px1_OD  .EQU    00001000B   ;08h
+  597         000C        	Px1_QB  .EQU    00001100B   ;0Ch
+  598         0000        	Px2_AN  .EQU    00000000B   ;00h
+  599         0010        	Px2_PP  .EQU    00010000B   ;10h
+  600         0020        	Px2_OD  .EQU    00100000B   ;20h
+  601         0030        	Px2_QB  .EQU    00110000B   ;30h
+  602         0000        	Px3_AN  .EQU    00000000B   ;00h
+  603         0040        	Px3_PP  .EQU    01000000B   ;40h
+  604         0080        	Px3_OD  .EQU    10000000B   ;80h
+  605         00C0        	Px3_QB  .EQU    11000000B   ;C0h
+  606                     	
+  607                     	
+  608         3018        	WDTCR0   .EQU    3018h
+  609                     	
+  610         3019        	WDTCR1   .EQU    3019h
+  611                     	;WDTFS    .EQU    00010000B
+  612                     	;ENW      .EQU    01000000B
+  613                     	;CLRW     .EQU    10000000B
+  614                     	
+  615  00000000             	P1_BUF   .DS    1
+  616  00000001             	PWR_CTL_TEMP   .DS    1
+  Wed Nov 04 11:25:03 2026                                                                                               Page   12
+
+
+
+
+  617                     	
+  618         005A        	PWPR_Key    .EQU    5Ah ;PWPR
+  619                     	
+  620                     	;   .include macro.asm
+  621                     	
+  622                     	;===================================================================
+  623                     	; RAM DECLARATION SECTION ;()
+  624                     	;===================================================================
+  625                     	    .PAGE0
+  626                     	;=== Variable in SRAM(zp) ===
+  627  00000000             	RAM00   .DS     1
+  628  00000001             	RAM01   .DS     1
+  629  00000002             	RAM02   .DS     1
+  630  00000003             	RAM03   .DS     1
+  631  00000004             	RAM04   .DS     1
+  632         0040        	RAM64   .EQU    64
+  633                     	    .ENDS
+  634                     	
+  635                     	
+  636                     	;=============================================
+  637                     	; MAIN PROGRAM ;()
+  638                     	;=============================================
+  639  0000BC00             	    .ORG    BC00H
+  640                     	reset:  ;Main program start here
+  641  0000BC00 78          	    SEI
+  642  0000BC01 A2 FF       	    LDX #FFh
+  643  0000BC03 AA          	    TAX ;Initial stack point
+  644                     	
+  645                     	
+  646                     	
+  647                     	
+  648                     	
+  649                     	
+  650                     	
+  651                     	
+  652                     	
+  653  0000BC04 A9 55       	    LDA #Px0_PP+Px1_PP+Px2_PP+Px3_PP
+  654  0000BC06 8D 04 30    	    STA P1M0
+  655                     	    ;STA P3M0
+  656  0000BC09 A9 00       	    LDA #00h
+  657  0000BC0B 85 E4       	    STA P1_DAT
+  658  0000BC0D 85 E5       	    STA P3_DAT
+  659  0000BC0F A9 05       	    LDA #05h
+  660  0000BC11 85 E4       	    STA P1_DAT
+  661  0000BC13 85 E5       	    STA P3_DAT
+  662  0000BC15 A9 0A       	    LDA #0Ah
+  663  0000BC17 85 E4       	    STA P1_DAT
+  664  0000BC19 85 E5       	    STA P3_DAT
+  665  0000BC1B A9 FF       	    LDA #FFh
+  666  0000BC1D 85 E4       	    STA P1_DAT
+  667  0000BC1F 85 E5       	    STA P3_DAT
+  668                     	
+  669  0000BC21 8D 00 00    	    STA P1_BUF
+  670                     	
+  671                     	;------------------------------------
+  672                     	;>--- STATEMENTS TO TEST Ext INT --- ;()
+  673                     	;------------------------------------
+  Wed Nov 04 11:25:03 2026                                                                                               Page   13
+
+
+
+
+  674                     	;TEST_ExtINT:
+  675  0000BC24             	LOOP:
+  676  0000BC24             	        
+  677  0000BC24 A9 FF       	        LDA #FFh ;P3 all QB mode
+  678  0000BC26 8D 05 30    	        STA P3M0
+  679                     	
+  680  0000BC29 A9 3F       	        LDA #3Fh ;ExINT0/1/2 IEx triggered control to dual edge
+  681  0000BC2B 8D 07 30    	        STA EICR1
+  682  0000BC2E A9 0F       	        LDA #IE2+IE1+IE0 ;Clear ExINT flag
+  683  0000BC30 85 E1       	        STA IRQ0_STS
+  684  0000BC32 A9 0F       	        LDA #EX2+EX1+EX0 ;ExINT0/1/2 interrupt enable
+  685  0000BC34 8D 01 30    	        STA IRQ0_EN
+  686  0000BC37 58          	        CLI
+  687                     	
+  688                     	        ;Entry to HALT mode
+  689                     	        ;LDA #PWPR_Key
+  690                     	        ;STA PWPR
+  691                     	        ;LDA #HALT
+  692                     	        ;STA PWR_CTL
+  693                     	
+  694  0000BC38             	       
+  695                     	        ;LDA #$DC
+  696                     	        ;STA $30FF
+  697  0000BC38             	main_loop:
+  698                     	
+  699  0000BC38 A2 00       	        LDX #00h
+  700  0000BC3A             	 P10_Toogle:
+  701  0000BC3A AD 00 00    	        LDA P1_BUF
+  702  0000BC3D 49 01       	        XOR #01h
+  703  0000BC3F 85 E4       	        STA P1_DAT
+  704  0000BC41 8D 00 00    	        STA P1_BUF
+  705  0000BC44 E8          	        INX
+  706  0000BC45 E0 09       	        CPX #09h
+  707  0000BC47 90 F1       	        BLT P10_Toogle
+  708                     	
+  709  0000BC49             	IEx_Check:
+  710  0000BC49 A5 E1       	        LDA IRQ0_STS
+  711  0000BC4B 29 0F       	        AND #IE2+IE1+IE0
+  712  0000BC4D D0 FA       	        BNE IEx_Check
+  713  0000BC4F             	  
+  714                     	        ;Entry to STOP mode
+  715  0000BC4F AD 10 30    	        LDA PWR_CTL
+  716  0000BC52 8D 01 00    	        STA PWR_CTL_TEMP
+  717                     	
+  718  0000BC55 A9 5A       	        LDA #PWPR_Key
+  719  0000BC57 8D 0F 30    	        STA PWPR
+  720  0000BC5A A9 01       	        LDA #STOP
+  721  0000BC5C 0D 01 00    	        ORA PWR_CTL_TEMP
+  722  0000BC5F 8D 10 30    	        STA PWR_CTL
+  723                     	
+  724  0000BC62 EA          	        NOP
+  725  0000BC63 EA          	        NOP
+  726                     	
+  727  0000BC64 4C 38 BC    	        jmp main_loop
+  728                     	
+  729                     	
+  730                     	;=============================================
+  Wed Nov 04 11:25:03 2026                                                                                               Page   14
+
+
+
+
+  731                     	; INTERRUPT SERVICE ROUTINE ;()
+  732                     	;=============================================
+  733  0000BC67             	irq_isr:
+  734  0000BC67 48          	    PHA
+  735  0000BC68 A5 E1       	    LDA IRQ0_STS
+  736  0000BC6A 29 06       	    AND #IE2
+  737  0000BC6C F0 0E       	    BEQ ExtINT1_check
+  738  0000BC6E A9 06       	    LDA #IE2 ;Clear IE2
+  739  0000BC70 85 E1       	    STA IRQ0_STS
+  740  0000BC72 AD 00 00    	    LDA P1_BUF;P11	int2=p30
+  741  0000BC75 49 02       	    XOR #02h
+  742  0000BC77 85 E4       	    STA P1_DAT
+  743  0000BC79 8D 00 00    		STA P1_BUF
+  744                     	    ;JMP irq_isr_end
+  745                     	
+  746  0000BC7C             	ExtINT1_check:
+  747  0000BC7C A5 E1       	    LDA IRQ0_STS
+  748  0000BC7E 29 05       	    AND #IE1
+  749  0000BC80 F0 0E       	    BEQ ExtINT0_check
+  750  0000BC82 A9 05       	    LDA #IE1 ;Clear IE1
+  751  0000BC84 85 E1       	    STA IRQ0_STS
+  752  0000BC86 AD 00 00    	    LDA P1_BUF  ;P12	int1=p33(45)
+  753  0000BC89 49 04       	    XOR #04h
+  754  0000BC8B 85 E4       	    STA P1_DAT
+  755  0000BC8D 8D 00 00    	    STA P1_BUF
+  756                     	    ;JMP irq_isr_end
+  757                     	
+  758  0000BC90             	ExtINT0_check:
+  759  0000BC90 A5 E1       	    LDA IRQ0_STS
+  760  0000BC92 29 04       	    AND #IE0
+  761  0000BC94 F0 0E       	    BEQ irq_isr_end
+  762  0000BC96 A9 04       	    LDA #IE0 ;Clear IE0
+  763  0000BC98 85 E1       	    STA IRQ0_STS
+  764  0000BC9A AD 00 00    	    LDA P1_BUF  ;P13	int0=p32(44)
+  765  0000BC9D 49 08       	    XOR #08h
+  766  0000BC9F 85 E4       	    STA P1_DAT
+  767  0000BCA1 8D 00 00    	    STA P1_BUF
+  768                     	
+  769  0000BCA4             	irq_isr_end:
+  770  0000BCA4 68          	    PLA
+  771  0000BCA5 40          	    rti
+  772                     	
+  773                     	
+  774                     	;=============================================
+  775                     	; INTERRUPT VECTOR SECTION ;()
+  776                     	;=============================================
+  777  0000FFFC             	    .org    FFFCH
+  778  0000FFFC             	VECTOR:
+  779                     	    ;.DW reset       ;reset
+  780                     	    ;.DW irq_isr     ;IRQ interrupt vector
+  781                     	
+  782  0000FFFC 00          	    .DB .LOW.reset      ;reset
+  783  0000FFFD BC          	    .DB .HIGH.reset     ;reset
+  784  0000FFFE 67          	    .DB .LOW.irq_isr    ;IRQ interrupt vector
+  785  0000FFFF BC          	    .DB .HIGH.irq_isr   ;IRQ interrupt vector
+  786                     	
+  787                     	
+  Wed Nov 04 11:25:03 2026                                                                                               Page   15
+
+
+
+
+
+
+             Lines Assembled : 787                  Errors : 0
+
+
+

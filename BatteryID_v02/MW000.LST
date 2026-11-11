@@ -1,0 +1,2523 @@
+  Tue Nov 10 15:48:54 2026                                                                                               Page    1
+
+
+
+
+
+
+
+               2500 A.D. 6502 Macro Assembler  -  Version 5.02b
+               ------------------------------------------------
+
+                       Input  Filename : D:\YuZhu\06_Project\FA277\BatteryID\BatteryID_v02\MW000.asb
+                       Output Filename : D:\YuZhu\06_Project\FA277\BatteryID\BatteryID_v02\MW000.OBJ
+                       Listing Has Been Relocated                               
+
+
+    1                     	;************************************************************************
+    2                     	;   MEGAWIN MLC-SERIES APPLICATION PROGRAM
+    3                     	;   THIS TEMPLATE IS SUITABLE FOR:
+    4                     	;   MSE01PC1A
+    5                     	;************************************************************************
+    6                     	;===================================================================
+    7                     	; PGM_HEAD.H ;()
+    8                     	;===================================================================
+    9  00000000             	    .include FA277_SFR.h
+   10                     	; ******************************************************************************
+   11                     	; *
+   12                     	; * @file        FA277_SFR.h (Merged with pgm_head_MSE01PC1A.h)
+   13                     	; *
+   14                     	; * @brief       This is the header file of the SFR address.
+   15                     	; *
+   16                     	; * @par         Project
+   17                     	; *              FA277
+   18                     	; * @version     v0.01
+   19                     	; * @date        2025/11/13
+   20                     	; * @copyright   Copyright (c) 2019 MegaWin Technology Co., Ltd.
+   21                     	; *              All rights reserved.
+   22                     	; *
+   23                     	; ******************************************************************************
+   24                     	
+   25  00000000             	    .CHIP       R65C02
+   26                     	    .LINKLIST
+   27                     	    .SYMBOLS
+   28                     	    .LIST       ON
+   29                     	    .debug      asm
+   30                     	
+   31         0001        	bit0    .EQU    00000001B
+   32         0002        	bit1    .EQU    00000010B
+   33         0004        	bit2    .EQU    00000100B
+   34         0008        	bit3    .EQU    00001000B
+   35         0010        	bit4    .EQU    00010000B
+   36         0020        	bit5    .EQU    00100000B
+   37         0040        	bit6    .EQU    01000000B
+   38         0080        	bit7    .EQU    10000000B
+   39                     	
+   40                     	;-------------------------------------------------------------
+   41                     	; Interrupt 
+   42                     	;-------------------------------------------------------------
+   43         3001        	IRQ0_EN            EQU 3001h     ;IRQ Enable 0
+   44                     	; (bits in IRQ0_EN)
+   45         0007        	EBOF0              .EQU    7
+   46         0006        	EX2                .EQU    6
+  Tue Nov 10 15:48:54 2026                                                                                               Page    2
+
+
+
+
+   47         0005        	EX1                .EQU    5
+   48         0004        	EX0                .EQU    4
+   49         0003        	ETF1               .EQU    3
+   50         0002        	ETF0               .EQU    2
+   51         0001        	ETI1               .EQU    1
+   52         0000        	ERI1               .EQU    0
+   53                     	
+   54         00E1        	IRQ0_STS           EQU 00E1h     ;IRQ Status 0
+   55                     	; (bits in IRQ0_STS)
+   56         0007        	BOF0               .EQU    7
+   57         0006        	IE2                .EQU    6
+   58         0005        	IE1                .EQU    5
+   59         0004        	IE0                .EQU    4
+   60         0003        	TF1                .EQU    3
+   61         0002        	TF0                .EQU    2
+   62         0001        	TI1i               .EQU    1
+   63         0000        	RI1i               .EQU    0
+   64                     	
+   65         3002        	IRQ1_EN            EQU 3002h     ;IRQ Enable 1
+   66                     	; (bits in IRQ1_EN)
+   67         0007        	EAC1R              .EQU    7
+   68         0006        	EAC1F              .EQU    6
+   69         0005        	EAC0R              .EQU    5
+   70         0004        	EAC0F              .EQU    4
+   71         0003        	EADCI              .EQU    3
+   72         0002        	EMCDF              .EQU    2
+   73         0001        	ERTCF              .EQU    1
+   74         0000        	EWDTF              .EQU    0
+   75                     	
+   76         00E2        	IRQ1_STS           EQU 00E2h     ;IRQ Status 1
+   77                     	; (bits in IRQ1_STS)
+   78         0007        	AC1RF              .EQU    7
+   79         0006        	AC1FF              .EQU    6
+   80         0005        	AC0RF              .EQU    5
+   81         0004        	AC0FF              .EQU    4
+   82         0003        	ADCI               .EQU    3
+   83         0002        	MCDF               .EQU    2
+   84         0001        	RTCF               .EQU    1
+   85         0000        	WDTF               .EQU    0
+   86                     	
+   87         3003        	IRQ2_EN            EQU 3003h     ;IRQ Enable 2
+   88                     	; (bits in IRQ2_EN)
+   89         0003        	ERFW               .EQU    3
+   90         0000        	ERFI               .EQU    0
+   91                     	
+   92         00E3        	IRQ2_STS           EQU 00E3h     ;IRQ Status 2
+   93                     	; (bits in IRQ2_STS)
+   94         0007        	RFACT              .EQU    7
+   95         0006        	RFCYC              .EQU    6
+   96         0003        	RFWKP              .EQU    3
+   97         0002        	RFACK              .EQU    2
+   98         0001        	UCAC               .EQU    1
+   99         0000        	RFINT              .EQU    0
+  100                     	
+  101                     	;-------------------------------------------------------------
+  102                     	; Port1 
+  103                     	;-------------------------------------------------------------
+  Tue Nov 10 15:48:54 2026                                                                                               Page    3
+
+
+
+
+  104         00E4        	P1_PIN             EQU 00E4h     ;Port 1 Pin (R)
+  105                     	; (bits in P1_PIN)
+  106         0003        	P13                .EQU    3
+  107         0002        	P12                .EQU    2
+  108         0001        	P11                .EQU    1
+  109         0000        	P10                .EQU    0
+  110                     	
+  111         00E4        	P1_DAT             EQU 00E4h     ;Port 1 output Data (W)
+  112         00E4        	P1                 EQU 00E4h     ;Port 1 (Alias)
+  113                     	
+  114         3004        	P1M0               EQU 3004h     ;Port 1 Mode Control 0
+  115                     	; (bits in P1M0)
+  116         0007        	P13M1              .EQU    7
+  117         0006        	P13M0              .EQU    6
+  118         0005        	P12M1              .EQU    5
+  119         0004        	P12M0              .EQU    4
+  120         0003        	P11M1              .EQU    3
+  121         0002        	P11M0              .EQU    2
+  122         0001        	P10M1              .EQU    1
+  123         0000        	P10M0              .EQU    0
+  124                     	
+  125                     	;-------------------------------------------------------------
+  126                     	; Port 3 
+  127                     	;-------------------------------------------------------------
+  128         00E5        	P3_PIN             EQU 00E5h     ;Port 3 Pin (R)
+  129                     	; (bits in P3_PIN)
+  130         0003        	P33                .EQU    3
+  131         0002        	P32                .EQU    2
+  132         0001        	P31                .EQU    1
+  133         0000        	P30                .EQU    0
+  134  00000000             	 
+  135         00E5        	P3_DAT             EQU 00E5h     ;Port 3 output Data (W)
+  136         00E5        	P3                 EQU 00E5h     ;Port 3 (Alias)
+  137                     	
+  138         3005        	P3M0               EQU 3005h     ;Port 3 Mode Control 0
+  139                     	; (bits in P3M0)
+  140         0007        	P33M1              .EQU    7
+  141         0006        	P33M0              .EQU    6
+  142         0005        	P32M1              .EQU    5
+  143         0004        	P32M0              .EQU    4
+  144         0003        	P31M1              .EQU    3
+  145         0002        	P31M0              .EQU    2
+  146         0001        	P30M1              .EQU    1
+  147         0000        	P30M0              .EQU    0
+  148                     	
+  149                     	;-------------------------------------------------------------
+  150                     	; External Interrupt 
+  151                     	;-------------------------------------------------------------
+  152         3006        	EICR0              EQU 3006h     ;Exteranl INT Control 0
+  153                     	; (bits in EICR0)
+  154         0006        	INT2ET             .EQU    6
+  155         0005        	INT1ET             .EQU    5
+  156         0004        	INT0ET             .EQU    4
+  157         0002        	INT2H              .EQU    2
+  158         0001        	INT1H              .EQU    1
+  159         0000        	INT0H              .EQU    0
+  160                     	
+  Tue Nov 10 15:48:54 2026                                                                                               Page    4
+
+
+
+
+  161         3007        	EICR1              EQU 3007h     ;External INT Control 1
+  162                     	; (bits in EICR1)
+  163         0005        	EI2ES1             .EQU    5
+  164         0004        	EI2ES0             .EQU    4
+  165         0003        	EI1ES1             .EQU    3
+  166         0002        	EI1ES0             .EQU    2
+  167         0001        	EI0ES1             .EQU    1
+  168         0000        	EI0ES0             .EQU    0
+  169                     	
+  170                     	;-------------------------------------------------------------
+  171                     	; Timer 0 
+  172                     	;-------------------------------------------------------------
+  173         00E6        	T0CNT              EQU 00E6h     ;Timer 0 Counter Reg. (R)
+  174         00E7        	T0CTL              EQU 00E7h     ;Timer 0 Control Reg.
+  175                     	; (bits in T0CTL)
+  176         0007        	ENT0               .EQU    7
+  177         0006        	T0RL               .EQU    6
+  178         0002        	T0K2               .EQU    2
+  179         0001        	T0K1               .EQU    1
+  180         0000        	T0K0               .EQU    0
+  181                     	
+  182                     	;-------------------------------------------------------------
+  183                     	; Timer 1 / PWM1 
+  184                     	;-------------------------------------------------------------
+  185         00E8        	T1CNT              EQU 00E8h     ;Timer 1 Counter Reg. (R)
+  186         00E9        	T1CTL              EQU 00E9h     ;Timer 1 Control Reg.
+  187                     	; (bits in T1CTL)
+  188         0007        	ENT1               .EQU    7
+  189         0006        	T1RL               .EQU    6
+  190         0004        	T1M1               .EQU    4
+  191         0003        	T1M0               .EQU    3
+  192         0002        	T1K2               .EQU    2
+  193         0001        	T1K1               .EQU    1
+  194         0000        	T1K0               .EQU    0
+  195                     	
+  196                     	;-------------------------------------------------------------
+  197                     	; PWM Control 
+  198                     	;-------------------------------------------------------------
+  199         3008        	TCON               EQU 3008h     ;Timer Control
+  200                     	; (bits in TCON)
+  201         0007        	T1ORWE             .EQU    7
+  202         0006        	T1OR               .EQU    6
+  203         0005        	T0ORWE             .EQU    5
+  204         0004        	T0OR               .EQU    4
+  205         0003        	T1CKOE             .EQU    3
+  206         0002        	T0CKOE             .EQU    2
+  207         0001        	EPWM1              .EQU    1
+  208         0000        	EPWM0              .EQU    0
+  209                     	
+  210         3009        	PWM0DA             EQU 3009h     ;PWM 0 Data
+  211                     	
+  212                     	;-------------------------------------------------------------
+  213                     	; UART Interface 
+  214                     	;-------------------------------------------------------------
+  215         3030        	S1CON              EQU 3030h     ;Serial 1 Control
+  216                     	; (bits in S1CON)
+  217         0007        	SM01               .EQU    7
+  Tue Nov 10 15:48:54 2026                                                                                               Page    5
+
+
+
+
+  218         0006        	SM11               .EQU    6
+  219         0005        	SM21               .EQU    5
+  220         0004        	REN1               .EQU    4
+  221         0003        	TB81               .EQU    3
+  222         0002        	RB81               .EQU    2
+  223         0001        	TI1                .EQU    1
+  224         0000        	RI1                .EQU    0
+  225                     	
+  226         3031        	S1BUF              EQU 3031h     ;Serial 1 Buffer
+  227         3032        	S1BRT              EQU 3032h     ;S1 Baud Rate Timer
+  228         3033        	S1BRC              EQU 3033h     ;S1 Baud Rate Counter
+  229         3034        	S1CFG              EQU 3034h     ;S1 Configuration
+  230                     	; (bits in S1CFG)
+  231         0007        	SM31               .EQU    7
+  232         0006        	S1MOD3             .EQU    6
+  233         0005        	S1DOR              .EQU    5
+  234         0004        	S1TR               .EQU    4
+  235         0003        	S1MOD1             .EQU    3
+  236         0002        	S1TX16             .EQU    2
+  237         0001        	S1CKOE             .EQU    1
+  238         0000        	S1TME              .EQU    0
+  239                     	
+  240                     	;-------------------------------------------------------------
+  241                     	; ADC Module 
+  242                     	;-------------------------------------------------------------
+  243         3020        	ADCON              EQU 3020h     ;ADC Control
+  244                     	; (bits in ADCON)
+  245         0007        	ADCEN              .EQU    7
+  246         0006        	ADCS               .EQU    6
+  247         0005        	IVREN              .EQU    5
+  248         0004        	ADTM0              .EQU    4
+  249         0003        	CHS3               .EQU    3
+  250         0002        	CHS2               .EQU    2
+  251         0001        	CHS1               .EQU    1
+  252         0000        	CHS0               .EQU    0
+  253                     	
+  254         3021        	ADCDL              EQU 3021h     ;ADC Data Low Byte
+  255         3022        	ADCDH              EQU 3022h     ;ADC Data High Byte
+  256                     	
+  257         3023        	ADCFG0             EQU 3023h     ;ADC Configuration 0
+  258                     	; (bits in ADCFG0)
+  259         0007        	ADCKS2             .EQU    7
+  260         0006        	ADCKS1             .EQU    6
+  261         0005        	ADCKS0             .EQU    5
+  262         0004        	ADRJ               .EQU    4
+  263         0003        	ADHS               .EQU    3
+  264         0002        	IAOFF              .EQU    2
+  265         0001        	AAOFF              .EQU    1
+  266         0000        	AAHLT              .EQU    0
+  267                     	
+  268         3024        	ADCFG1             EQU 3024h     ;ADC Configuration 1
+  269                     	; (bits in ADCFG1)
+  270         0007        	SHT7               .EQU    7
+  271         0006        	SHT6               .EQU    6
+  272         0005        	SHT5               .EQU    5
+  273         0004        	SHT4               .EQU    4
+  274         0003        	SHT3               .EQU    3
+  Tue Nov 10 15:48:54 2026                                                                                               Page    6
+
+
+
+
+  275         0002        	SHT2               .EQU    2
+  276         0001        	SHT1               .EQU    1
+  277         0000        	SHT0               .EQU    0
+  278                     	
+  279         3025        	ADCFG2             EQU 3025h     ;ADC Configuration 2
+  280                     	
+  281                     	;-------------------------------------------------------------
+  282                     	; AC0 Module 
+  283                     	;-------------------------------------------------------------
+  284         3028        	AC0CON             EQU 3028h     ;AC0 Control
+  285                     	; (bits in AC0CON)
+  286         0007        	AC0LP              .EQU    7
+  287         0006        	AC0PD              .EQU    6
+  288         0005        	AC0OUT             .EQU    5
+  289         0003        	AC0EN              .EQU    3
+  290                     	
+  291         3029        	AC0CFG0            EQU 3029h     ;AC0 Configuration 0
+  292                     	; (bits in AC0CFG0)
+  293         0007        	AC0CS3             .EQU    7
+  294         0006        	AC0CS2             .EQU    6
+  295         0005        	AC0CS1             .EQU    5
+  296         0004        	AC0CS0             .EQU    4
+  297         0003        	AC0TD1             .EQU    3
+  298         0002        	AC0TD0             .EQU    2
+  299         0001        	SWE0               .EQU    1
+  300         0000        	ASE0               .EQU    0
+  301                     	
+  302         302A        	AC0CFG1            EQU 302Ah     ;AC0 Configuration 1
+  303                     	; (bits in AC0CFG1)
+  304         0007        	R4HS3              .EQU    7
+  305         0006        	R4HS2              .EQU    6
+  306         0005        	R4HS1              .EQU    5
+  307         0004        	R4HS0              .EQU    4
+  308         0003        	R3HEN              .EQU    3
+  309         0002        	R2HEN              .EQU    2
+  310         0001        	AC0NIH             .EQU    1
+  311         0000        	AC0HE              .EQU    0
+  312                     	
+  313         302B        	AC0CFG2            EQU 302Bh     ;AC0 Configuration 2
+  314                     	; (bits in AC0CFG2)
+  315         0007        	R4LS3              .EQU    7
+  316         0006        	R4LS2              .EQU    6
+  317         0005        	R4LS1              .EQU    5
+  318         0004        	R4LS0              .EQU    4
+  319         0003        	R3LEN              .EQU    3
+  320         0002        	R2LEN              .EQU    2
+  321         0001        	AC0NIL             .EQU    1
+  322         0000        	AC0LE              .EQU    0
+  323                     	
+  324                     	;-------------------------------------------------------------
+  325                     	; AC1 Module 
+  326                     	;-------------------------------------------------------------
+  327         302C        	AC1CON             EQU 302Ch     ;AC1 Control
+  328                     	; (bits in AC1CON)
+  329         0007        	AC1LP              .EQU    7
+  330         0006        	AC1PD              .EQU    6
+  331         0005        	AC1OUT             .EQU    5
+  Tue Nov 10 15:48:54 2026                                                                                               Page    7
+
+
+
+
+  332         0003        	AC1EN              .EQU    3
+  333         0001        	RL1E               .EQU    1
+  334         0000        	CCEN               .EQU    0
+  335                     	
+  336         302D        	AC1CFG0            EQU 302Dh     ;AC1 Configuration 0
+  337                     	; (bits in AC1CFG0)
+  338         0007        	AC1CS3             .EQU    7
+  339         0006        	AC1CS2             .EQU    6
+  340         0005        	AC1CS1             .EQU    5
+  341         0004        	AC1CS0             .EQU    4
+  342         0003        	AC1TD1             .EQU    3
+  343         0002        	AC1TD0             .EQU    2
+  344         0000        	ASE1               .EQU    0
+  345                     	
+  346         302E        	AC1CFG1            EQU 302Eh     ;AC1 Configuration 1
+  347                     	; (bits in AC1CFG1)
+  348         0007        	R2S3               .EQU    7
+  349         0006        	R2S2               .EQU    6
+  350         0005        	R2S1               .EQU    5
+  351         0004        	R2S0               .EQU    4
+  352                     	
+  353                     	;-------------------------------------------------------------
+  354                     	; Auxiliary Registers (AUXR)
+  355                     	;-------------------------------------------------------------
+  356         303F        	AUXR0              EQU 303Fh     ;Auxiliary Register 0
+  357                     	; (bits in AUXR0)
+  358         0007        	PSS11              .EQU    7
+  359         0006        	PSS10              .EQU    6
+  360         0005        	PSEI21             .EQU    5
+  361         0004        	PSEI20             .EQU    4
+  362         0003        	PSEI11             .EQU    3
+  363         0002        	PSEI10             .EQU    2
+  364         0001        	PSEI01             .EQU    1
+  365         0000        	PSEI00             .EQU    0
+  366                     	
+  367         303E        	AUXR1              EQU 303Eh     ;Auxiliary Register 1
+  368                     	; (bits in AUXR1)
+  369         0007        	PSRO1              .EQU    7
+  370         0006        	PSRO0              .EQU    6
+  371         0004        	PSS1CO             .EQU    4
+  372         0003        	PSS1MI             .EQU    3
+  373         0002        	PST1               .EQU    2
+  374         0001        	PSPWM1             .EQU    1
+  375         0000        	PSPWM0             .EQU    0
+  376                     	
+  377         303D        	AUXR2              EQU 303Dh     ;Auxiliary Register 2
+  378                     	; (bits in AUXR2)
+  379         0001        	BO1O               .EQU    1
+  380         0000        	BO0O               .EQU    0
+  381                     	
+  382                     	;-------------------------------------------------------------
+  383                     	; Hardware Options (ORxx)
+  384                     	;-------------------------------------------------------------
+  385         3100        	OR00               EQU 3100h
+  386                     	; (bits in OR00)
+  387         0004        	NLOCK              .EQU    4
+  388         0000        	OSCS               .EQU    0
+  Tue Nov 10 15:48:54 2026                                                                                               Page    8
+
+
+
+
+  389                     	
+  390         3101        	OR01               EQU 3101h
+  391                     	; (bits in OR01)
+  392         0007        	WDTWFWP            .EQU    7
+  393         0006        	NSWDT              .EQU    6
+  394         0005        	HWENW              .EQU    5
+  395         0004        	WRENO              .EQU    4
+  396         0003        	HWIDL              .EQU    3
+  397         0002        	HWPS2              .EQU    2
+  398         0001        	HWPS1              .EQU    1
+  399         0000        	HWPS0              .EQU    0
+  400                     	
+  401         3102        	OR2                EQU 3102h            
+  402         3103        	OR3                EQU 3103h                          
+  403         3104        	OR4                EQU 3104h                         
+  404         3105        	OR5                EQU 3105h                
+  405         3106        	OR6                EQU 3106h           
+  406         3107        	OR7                EQU 3107h
+  407                     	
+  408                     	;-------------------------------------------------------------
+  409                     	; NFC Buffer 
+  410                     	;-------------------------------------------------------------
+  411         3040        	RF_ID0             EQU 3040h     ;RF UID0
+  412         3041        	RF_ID1             EQU 3041h     ;RF UID1
+  413         3042        	RF_ID2             EQU 3042h     ;RF UID2
+  414         3043        	RF_ID3             EQU 3043h     ;RF UID3
+  415         3044        	RF_ID4             EQU 3044h     ;RF UID4
+  416         3045        	RF_ID5             EQU 3045h     ;RF UID5
+  417         3046        	RF_ID6             EQU 3046h     ;RF UID6
+  418         3047        	RF_INIT            EQU 3047h     ;RF Configuration
+  419                     	
+  420         3060        	RF_CMD             EQU 3060h     ;RF Command
+  421         3061        	RF_Page            EQU 3061h     ;RF Page
+  422         3062        	RF_Parm            EQU 3062h     ;RF CMD Parameter
+  423         3063        	RF_STS             EQU 3063h     ;RF Status
+  424         3064        	RF_DA0             EQU 3064h     ;RF Data Byte 0
+  425         3065        	RF_DA1             EQU 3065h     ;RF Data Byte 1
+  426         3066        	RF_DA2             EQU 3066h     ;RF Data Byte 2
+  427         3067        	RF_DA3             EQU 3067h     ;RF Data Byte 3
+  428         3068        	RF_DA4             EQU 3068h     ;RF Data Byte 4
+  429         3069        	RF_DA5             EQU 3069h     ;RF Data Byte 5
+  430         306A        	RF_DA6             EQU 306Ah     ;RF Data Byte 6
+  431         306B        	RF_DA7             EQU 306Bh     ;RF Data Byte 7
+  432         306C        	RF_DA8             EQU 306Ch     ;RF Data Byte 8
+  433         306D        	RF_DA9             EQU 306Dh     ;RF Data Byte 9
+  434         306E        	RF_DA10            EQU 306Eh     ;RF Data Byte 10
+  435         306F        	RF_DA11            EQU 306Fh     ;RF Data Byte 11
+  436         3070        	RF_DA12            EQU 3070h     ;RF Data Byte 12
+  437         3071        	RF_DA13            EQU 3071h     ;RF Data Byte 13
+  438         3072        	RF_DA14            EQU 3072h     ;RF Data Byte 14
+  439         3073        	RF_DA15            EQU 3073h     ;RF Data Byte 15
+  440                     	
+  441                     	;-------------------------------------------------------------
+  442                     	; GPL / CRC 
+  443                     	;-------------------------------------------------------------
+  444         00EA        	BOREV              EQU 00EAh     ;Bit Order Reversed
+  445         00EB        	CRC0DA             EQU 00EBh     ;CRC0 Data Register
+  Tue Nov 10 15:48:54 2026                                                                                               Page    9
+
+
+
+
+  446         300C        	CRC0CR             EQU 300Ch     ;CRC0 Control 0
+  447                     	; (bits in CRC0CR)
+  448         0007        	PAR                .EQU    7
+  449         0001        	CRCDS1             .EQU    1
+  450         0000        	CRCDS0             .EQU    0
+  451                     	
+  452                     	;-------------------------------------------------------------
+  453                     	; MDU 
+  454                     	;-------------------------------------------------------------
+  455         3036        	MDU_A              EQU 3036h     ;MDU A Register
+  456         3037        	MDU_B              EQU 3037h     ;MDU B Register
+  457         3038        	MDUCR              EQU 3038h     ;MDU Control Register
+  458                     	; (bits in MDUCR)
+  459         0002        	MDUM0              .EQU    2
+  460         0001        	MDUST              .EQU    1
+  461         0000        	MDUS               .EQU    0
+  462                     	
+  463                     	;-------------------------------------------------------------
+  464                     	; AES128 
+  465                     	;-------------------------------------------------------------
+  466         00EF        	AES_CR0            EQU 00EFh     ;AES Control 0
+  467                     	; (bits in AES_CR0)
+  468         0007        	AES_RST            .EQU    7
+  469         0003        	AES_M1             .EQU    3
+  470         0002        	AES_M0             .EQU    2
+  471         0001        	ENCPT              .EQU    1
+  472         0000        	AES_STR            .EQU    0
+  473                     	
+  474         00F0        	AES_DA0            EQU 00F0h     ;AES Data Byte 0
+  475         00F1        	AES_DA1            EQU 00F1h     ;AES Data Byte 1
+  476         00F2        	AES_DA2            EQU 00F2h     ;AES Data Byte 2
+  477         00F3        	AES_DA3            EQU 00F3h     ;AES Data Byte 3
+  478         00F4        	AES_DA4            EQU 00F4h     ;AES Data Byte 4
+  479         00F5        	AES_DA5            EQU 00F5h     ;AES Data Byte 5
+  480         00F6        	AES_DA6            EQU 00F6h     ;AES Data Byte 6
+  481         00F7        	AES_DA7            EQU 00F7h     ;AES Data Byte 7
+  482         00F8        	AES_DA8            EQU 00F8h     ;AES Data Byte 8
+  483         00F9        	AES_DA9            EQU 00F9h     ;AES Data Byte 9
+  484         00FA        	AES_DA10           EQU 00FAh     ;AES Data Byte 10
+  485         00FB        	AES_DA11           EQU 00FBh     ;AES Data Byte 11
+  486         00FC        	AES_DA12           EQU 00FCh     ;AES Data Byte 12
+  487         00FD        	AES_DA13           EQU 00FDh     ;AES Data Byte 13
+  488         00FE        	AES_DA14           EQU 00FEh     ;AES Data Byte 14
+  489         00FF        	AES_DA15           EQU 00FFh     ;AES Data Byte 15
+  490                     	
+  491                     	;-------------------------------------------------------------
+  492                     	; In Application Programming (IAP) 
+  493                     	;-------------------------------------------------------------
+  494         300A        	IAP_PR             EQU 300Ah     ;IAP Write Protect Key (W)
+  495                     	; (bits in IAP_PR)
+  496         0007        	IPR7               .EQU    7
+  497         0006        	IPR6               .EQU    6
+  498         0005        	IPR5               .EQU    5
+  499         0004        	IPR4               .EQU    4
+  500         0003        	IPR3               .EQU    3
+  501         0002        	IPR2               .EQU    2
+  502         0001        	IPR1               .EQU    1
+  Tue Nov 10 15:48:54 2026                                                                                               Page   10
+
+
+
+
+  503         0000        	IPR0               .EQU    0
+  504                     	
+  505         300B        	IFMT               EQU 300Bh     ;IAP Command
+  506                     	; (bits in IFMT)
+  507         0007        	IAPEN              .EQU    7
+  508         0001        	IMS1               .EQU    1
+  509         0000        	IMS0               .EQU    0
+  510                     	
+  511                     	;-------------------------------------------------------------
+  512                     	; Protect Write Key 
+  513                     	;-------------------------------------------------------------
+  514         300F        	PWPR               EQU 300Fh     ;Proteck Write Pattern (W)
+  515                     	; (bits in PWPR)
+  516         0007        	PR7                .EQU    7
+  517         0006        	PR6                .EQU    6
+  518         0005        	PR5                .EQU    5
+  519         0004        	PR4                .EQU    4
+  520         0003        	PR3                .EQU    3
+  521         0002        	PR2                .EQU    2
+  522         0001        	PR1                .EQU    1
+  523         0000        	PR0                .EQU    0
+  524                     	
+  525                     	;-------------------------------------------------------------
+  526                     	; Power & Clock 
+  527                     	;-------------------------------------------------------------
+  528         3010        	PWR_CTL            EQU 3010h     ;Power Control
+  529                     	; (bits in PWR_CTL)
+  530         0007        	SCKS2              .EQU    7
+  531         0006        	SCKS1              .EQU    6
+  532         0005        	SCKS0              .EQU    5
+  533         0004        	HSE                .EQU    4
+  534         0003        	OSCS1              .EQU    3
+  535         0002        	OSCS0              .EQU    2
+  536         0001        	STOP               .EQU    1
+  537         0000        	HALT               .EQU    0
+  538                     	
+  539         3011        	CK_CTL             EQU 3011h     ;Clock Control
+  540                     	; (bits in CK_CTL)
+  541         0007        	ILDS               .EQU    7
+  542         0006        	NFCE               .EQU    6
+  543         0003        	MCDX               .EQU    3
+  544         0002        	MCDE               .EQU    2
+  545         0001        	XTEN               .EQU    1
+  546         0000        	IHEN               .EQU    0
+  547                     	
+  548         3012        	MCK_CTL            EQU 3012h     ;Module Clock Control
+  549                     	; (bits in MCK_CTL)
+  550         0007        	AESCE              .EQU    7
+  551         0006        	GPLCE              .EQU    6
+  552         0005        	AC1CE              .EQU    5
+  553         0004        	AC0CE              .EQU    4
+  554         0003        	ADCKE              .EQU    3
+  555         0002        	URCE               .EQU    2
+  556         0001        	TM1CE              .EQU    1
+  557         0000        	TM0CE              .EQU    0
+  558                     	
+  559         3013        	CKS_STS            EQU 3013h     ;Clock Switch Status (R)
+  Tue Nov 10 15:48:54 2026                                                                                               Page   11
+
+
+
+
+  560                     	; (bits in CKS_STS)
+  561         0007        	XTOR               .EQU    7
+  562         0003        	CKST3              .EQU    3
+  563         0002        	CKST2              .EQU    2
+  564         0001        	CKST1              .EQU    1
+  565         0000        	CKST0              .EQU    0
+  566                     	
+  567         301E        	PWR_CR1            EQU 301Eh     ;Power Control 1
+  568                     	; (bits in PWR_CR1)
+  569  00000000             	BO1
+  570                     	
+  571                     	
+  572                     	
+  573         0001        	MY_DEV_ID            .EQU   01h      ; 定義這台設備的 Device ID
+  574                     	
+  575         005A        	PWPR_Key             .EQU   5Ah ;PWPR key
+  576                     	
+  577         3015        	RST_SRF0              EQU 3015h  ;Reset Source Flag
+  578         3016        	RST_SRF1              EQU 3016h  ;Reset Source Flag
+  579         3018        	WDT_CR0               EQU 3018h  ;Watch-Dog-Timer Control Register 0
+  580         3019        	WDT_CR1               EQU 3019h  ;Watch-Dog-Timer Control Register 0
+  581         3022        	ADCDH0                EQU 3022h  ;
+  582         301A        	RTC_CR                EQU 301Ah  ;Real-Time-Clock Control Register
+  583         301B        	RTC_TM                EQU 301Bh  ;Real-Time-Clock Timer Register
+  584         301C        	RTC_CS                EQU 301Ch  ;RTC Clock Select Register 4
+  585                     	
+  586         3028        	BO1CR0                EQU 3028h  ;BOD1 Control 0
+  587         3029        	BO1CFG0               EQU 3029h  ;BOD1 Configuration 0
+  588         302A        	BO1CFG1               EQU 302Ah  ;BOD1 Configuration 1
+  589                     	
+  590         302C        	AC0CR0                EQU 302Ch  ; Analog Comparator 0 Control Register 0
+  591         302D        	AC0CR1                EQU 302Dh  ; Analog Comparator 0 Control Register 1
+  592                     	
+  593         3108        	OR08                  EQU 3108H
+  594                     	
+  595         724D        	TRMCC_ADC01           EQU 724DH   
+  596         7252        	TRMCC_ADC0            EQU 7252H   
+  597                     	    .PAGE0
+  598  00000000             	RAM00                .DS     1
+  599  00000001             	RAM01                .DS     1
+  600  00000002             	WAKEUP_FLAG          .DS     1   ; 標記 MCU 是否處於被喚醒狀態
+  601  00000003             	RX_READY             .DS     1   ; 標記 UART 是否收到一筆新資料
+  602  00000004             	RX_DATA              .DS     1   ; 存放 UART 收到的最新資料
+  603  00000005             	TIMEOUT_L            .DS     1   ; 超時防護計數器 (低位元組)
+  604  00000006             	TIMEOUT_H            .DS     1   ; 超時防護計數器 (高位元組)
+  605                     	
+  606  00000007             	SAVE_LEN             .DS     1   ; 備份原始收到的長度，回傳時要用
+  607  00000008             	PKT_LEN              .DS     1   ; 封包剩餘長度計數器
+  608  00000009             	CHK_SUM              .DS     1   ; 校驗和累加器
+  609  0000000A             	RX_TAG               .DS     1   ; 儲存上層傳來的亂數 Tag (回傳時使用)
+  610  0000000B             	RX_BUF               .DS     32  ; 存放收到的 [Tag, Mode, Cmd, Data...] (上限 16 bytes)
+  611                     	;(Warm Reset 時保留不歸零)
+  612  0000002B             	RTC_TICK             .DS     1   ; 記錄累積了幾秒的 RTC 中斷尚未處理
+  613  0000002C             	CAL_YEAR_L           .DS     1   ; 西元年低位元 (例如 2026 = 07EAh -> L=EAh)
+  614  0000002D             	CAL_YEAR_H           .DS     1   ; 西元年高位元 (例如 2026 = 07EAh -> H=07h)
+  615  0000002E             	CAL_MONTH            .DS     1   ; 月份 (1 ~ 12)
+  616  0000002F             	CAL_DAY              .DS     1   ; 日期 (1 ~ 31)
+  Tue Nov 10 15:48:54 2026                                                                                               Page   12
+
+
+
+
+  617  00000030             	CAL_HOUR             .DS     1   ; 小時 (0 ~ 23)
+  618  00000031             	CAL_MIN              .DS     1   ; 分鐘 (0 ~ 59)
+  619  00000032             	CAL_SEC              .DS     1   ; 秒數 (0 ~ 59)
+  620  00000033             	CAL_WEEK             .DS     1   ; 星期幾 (0=週日, 1=週一 ... 6=週六)
+  621  00000034             	TEMP_Y_L             .DS     1   ; 世紀年
+  622  00000035             	TEMP_Y_H             .DS     1   ; 世紀年
+  623                     	;(ADC VDD 變數)
+  624  00000036             	ADC_RAW_L            .DS     1   ; ADC 12-bit 轉換結果低位元 (ADCDL)
+  625  00000037             	ADC_RAW_H            .DS     1   ; ADC 12-bit 轉換結果高位元 (ADCDH0)
+  626  00000038             	VDD_INT              .DS     1   ; 算出的 VDD 整數部分 (例如 3V -> 03h)
+  627  00000039             	VDD_DEC              .DS     1   ; 算出的 VDD 小數部分 (例如 .30V -> 30 = 1Eh)
+  628  0000003A             	MATH_L               .DS     1   ; 24-bit 運算暫存器 (Low)
+  629  0000003B             	MATH_M               .DS     1   ; 24-bit 運算暫存器 (Mid)
+  630  0000003C             	MATH_H               .DS     1   ; 24-bit 運算暫存器 (High)
+  631  0000003D             	TEMP_R_L             .DS     1   ; 移位乘法暫存 (Low)
+  632  0000003E             	TEMP_R_M             .DS     1   ; 移位乘法暫存 (Mid)
+  633  0000003F             	TEMP_R_H             .DS     1   ; 移位乘法暫存 (High)
+  634                     	
+  635                     	; <---ADC 10 次平均濾波專用變數 --->
+  636  00000040             	ADC_CNT              .DS     1   ; 採樣次數計數器 (預設 10 次)
+  637  00000041             	SUM_L                .DS     1   ; 10 次總和暫存 (低位元)
+  638  00000042             	SUM_H                .DS     1   ; 10 次總和暫存 (高位元)
+  639  00000043             	MAX_L                .DS     1   ; 紀錄 10 次中的最大值 (低位元)
+  640  00000044             	MAX_H                .DS     1   ; 紀錄 10 次中的最大值 (高位元)
+  641  00000045             	MIN_L                .DS     1   ; 紀錄 10 次中的最小值 (低位元)
+  642  00000046             	MIN_H                .DS     1   ; 紀錄 10 次中的最小值 (高位元)
+  643                     	; <--- NTC 測溫與比例運算專用變數 --->
+  644  00000047             	NTC_MODE             .DS     1   ; NTC 檔位狀態：1 = 大電流，0 = 小電流
+  645  00000048             	IVR_RAW_L            .DS     1   ; 儲存 IVR 平均原始值，供 NTC 比例運算用
+  646  00000049             	IVR_RAW_H            .DS     1   
+  647  0000004A             	TEMP_L               .DS     1   ; 比例運算暫存
+  648  0000004B             	TEMP_H               .DS     1
+  649                     	; <--- AC0 過溫喚醒專用變數 --->
+  650  0000004C             	AC0_WAKE_FLAG        .DS     1   ; 1 = 發生 AC0 過溫喚醒，需主動回傳 UART
+  651  0000004D             	OT_LOCK_FLAG         .DS     1   ; 1 = 目前處於 >55度過溫狀態，等待降溫後重開中斷
+  652  0000004E             	DEFAULT_OR08         .DS     1   ; 用來備份上電時原本的 OR08 預設值
+  653                     	
+  654                     	; <--- BOD1 過高壓喚醒專用變數 --->
+  655  0000004F             	BOD1_WAKE_FLAG        .DS     1   ; 1 = VDD 超過 4.2V，需主動回傳 UART
+  656  00000050             	VDD_LOCK_FLAG         .DS     1   ; 1 = 目前處於 >4.2V 過壓狀態，等待降壓後重開中斷
+  657                     	    .ENDS
+  658                     	
+  659                     	;======================================================================
+  660                     	; --- 記憶體配置 ---	; FA277 17K Flash 起始位址
+  661                     	;======================================================================
+  662  0000BC00             	    .ORG    BC00H
+  663                     	
+  664                     	; ==============================================================================
+  665                     	; 系統啟動與重置 (System Reset)
+  666                     	; ==============================================================================
+  667                     	
+  668                     	reset:  ;Main program start here
+  669  0000BC00 78          	    SEI
+  670  0000BC01 A2 FF       	    LDX #FFh
+  671  0000BC03 AA          	    TAX ;Initial stack point
+  672                     	
+  673                     	    ; ---------------------------------------------------
+  Tue Nov 10 15:48:54 2026                                                                                               Page   13
+
+
+
+
+  674                     	    ; 1. 讀取並暫存重置旗標 RST_SRF0 RST_SRF1
+  675                     	    ; ---------------------------------------------------
+  676  0000BC04 AD 15 30    	    LDA RST_SRF0            ; 讀取 RST_SRF0 (0x3015)
+  677  0000BC07 85 00       	    STA RAM00               ; 備份到 RAM00 用意:後續 SFR 被清除後查不到死因
+  678  0000BC09 AD 16 30    		LDA RST_SRF1            ; 讀取 RST_SRF1 (0x3016)
+  679  0000BC0C 85 01       	    STA RAM01               ; 備份到 RAM01 用意:後續 SFR 被清除後查不到死因
+  680  0000BC0E             		
+  681  0000BC0E A9 5A       		LDA #PWPR_Key           ;解除寫保護機制
+  682  0000BC10 8D 0F 30    		STA PWPR
+  683  0000BC13 A9 FF       	    LDA #FFh                
+  684  0000BC15 8D 15 30    	    STA RST_SRF0            ; 將硬體旗標全部清零
+  685  0000BC18             		
+  686  0000BC18 A9 5A       		LDA #PWPR_Key           ;解除寫保護機制
+  687  0000BC1A 8D 0F 30    		STA PWPR
+  688  0000BC1D A9 FF       		LDA #FFh                
+  689  0000BC1F 8D 16 30    	    STA RST_SRF1            ; 將硬體旗標全部清零
+  690  0000BC22             		
+  691  0000BC22             		
+  692                     		; ---------------------------------------------------
+  693                     	    ; 2. 優先初始化硬體 (為了能馬上使用 UART)
+  694                     	    ; ---------------------------------------------------
+  695  0000BC22 20 3D C2    	    JSR INIT_IO_PORTS       
+  696  0000BC25 20 11 C3    	    JSR INIT_UART
+  697                     	    ; ---------------------------------------------------
+  698                     	    ; 3. UART 印出重置旗標 (例如 "RST(RAM00)=80\r\n")
+  699                     	    ; ---------------------------------------------------
+  700                     	    ;JSR PRINT_RST_FLAG
+  701                     		; ---------------------------------------------------
+  702                     	    ; 4. 逐一判定重置來源 (依優先級)
+  703                     	    ; ---------------------------------------------------
+  704  0000BC28             	CHECK_POF:
+  705  0000BC28 A5 00       	    LDA RAM00
+  706  0000BC2A 29 80       	    AND #80h                ; 檢查 Bit 7: POF (Power-On Flag / 上電重置)
+  707  0000BC2C D0 34       	    BNE COLD_BOOT_FLOW      ; 若為上電，冷開機
+  708  0000BC2E             	CHECK_EXRF:
+  709  0000BC2E A5 00       	    LDA RAM00
+  710  0000BC30 29 40       	    AND #40h                ; 檢查 Bit 6: EXRF (External Reset / 外部 RST 腳位觸發)
+  711  0000BC32 D0 2E       	    BNE COLD_BOOT_FLOW      ; 若為外部手動重置，冷開機
+  712  0000BC34             	CHECK_SWRF:
+  713  0000BC34 A5 00       	    LDA RAM00
+  714  0000BC36 29 20       	    AND #20h                ; 假設 Bit 4 為 SWRF (software Reset / 軟體重置)
+  715  0000BC38 D0 0C       	    BNE WARM_BOOT_FLOW      ; 暖開機
+  716  0000BC3A             	CHECK_WRF:
+  717  0000BC3A A5 00       	    LDA RAM00
+  718  0000BC3C 29 10       	    AND #10h                ; 假設 Bit 4 為 WRF (Watchdog Reset / 看門狗超時)
+  719  0000BC3E D0 06       	    BNE WARM_BOOT_FLOW      ; 若為超時，暖開機
+  720  0000BC40             	CHECK_IARF:
+  721  0000BC40 A5 00       	    LDA RAM00
+  722  0000BC42 29 08       	    AND #08h                ; 假設 Bit 3 為 IARF (Illegal Address Reset / 非法位址或跑飛)
+  723  0000BC44 D0 00       	    BNE WARM_BOOT_FLOW      ; 進入非法指標專屬處理，暖開機
+  724                     	
+  725                     	WARM_BOOT_FLOW:    ;warm reset
+  726  0000BC46 20 F8 C2    	    JSR CLEAR_WDT               ; 餵狗
+  727                     	    ; <--- Warm Reset 後 SFR 會被硬體歸零，需重新配置周邊與開啟中斷 --->
+  728  0000BC49 20 03 C3    	    JSR INIT_ILRCO_in_stop_mode 
+  729  0000BC4C 20 02 BE    		JSR INIT_ADC
+  730  0000BC4F 20 5F C2    		JSR INIT_RTC
+  Tue Nov 10 15:48:54 2026                                                                                               Page   14
+
+
+
+
+  731  0000BC52 20 D9 BD    		JSR INIT_AC0
+  732  0000BC55 20 9F BD    		JSR INIT_BOD1
+  733  0000BC58 A9 00       	    LDA #00h
+  734  0000BC5A 85 02       	    STA WAKEUP_FLAG
+  735  0000BC5C 85 03       	    STA RX_READY
+  736  0000BC5E 58          	    CLI                         ; 重新開啟全域中斷
+  737  0000BC5F 4C B4 BC    	    JMP main_loop
+  738  0000BC62             		
+  739                     	COLD_BOOT_FLOW:    ;cold reset
+  740                     		; <--- 冷開機清除 RAM 狀態旗標 --->
+  741  0000BC62 A9 00       		LDA #00h
+  742  0000BC64 85 02       	    STA WAKEUP_FLAG
+  743  0000BC66 85 4C       		STA AC0_WAKE_FLAG           
+  744  0000BC68 85 4D       	    STA OT_LOCK_FLAG            
+  745  0000BC6A 85 4F       		STA BOD1_WAKE_FLAG          
+  746  0000BC6C 85 50       	    STA VDD_LOCK_FLAG           
+  747  0000BC6E 85 03       	    STA RX_READY
+  748                     	    ;STA P1_BUF
+  749  0000BC70 85 2B       	    STA RTC_TICK
+  750  0000BC72             		
+  751  0000BC72 A9 01       		LDA #01h                    ; <--- 預設從「大電流檔」開始
+  752  0000BC74 85 47       	    STA NTC_MODE
+  753  0000BC76             		
+  754                     		; 備份上電時原本的 OR08 數值供後續恢復使用
+  755  0000BC76 AD 08 31    	    LDA OR08
+  756  0000BC79 85 4E       	    STA DEFAULT_OR08
+  757  0000BC7B             		
+  758                     		; <--- 冷開機初始化萬年曆預設時間 (以 MAIN.c 的 2022/4/8 16:08:50 週五 為例) --->
+  759  0000BC7B A9 EA       	    LDA #EAh                    ; 2026 = 07EAh (低位元 EAh)
+  760  0000BC7D 85 2C       	    STA CAL_YEAR_L
+  761  0000BC7F A9 07       	    LDA #07h                    ; 2026 高位元 07h
+  762  0000BC81 85 2D       	    STA CAL_YEAR_H
+  763  0000BC83 A9 02       	    LDA #02h                    ; 2 月 (February)
+  764  0000BC85 85 2E       	    STA CAL_MONTH
+  765  0000BC87 A9 1C       	    LDA #1Ch                    ; 28 日 (十進位的 28 = 1Ch)
+  766  0000BC89 85 2F       	    STA CAL_DAY
+  767  0000BC8B A9 17       	    LDA #17h                    ; 23 時 (十進位的 23 = 17h)
+  768  0000BC8D 85 30       	    STA CAL_HOUR
+  769  0000BC8F A9 3B       	    LDA #3Bh                    ; 59 分 (十進位的 59 = 3Bh)
+  770  0000BC91 85 31       	    STA CAL_MIN
+  771  0000BC93 A9 32       	    LDA #32h                    ; 50 秒 (32h)
+  772  0000BC95 85 32       	    STA CAL_SEC
+  773  0000BC97 A9 01       	    LDA #01h                    ; 星期
+  774  0000BC99 85 33       	    STA CAL_WEEK
+  775  0000BC9B             		
+  776  0000BC9B             		
+  777  0000BC9B 20 3D C2    		JSR INIT_IO_PORTS
+  778  0000BC9E 20 11 C3    		JSR INIT_UART
+  779  0000BCA1 20 03 C3    		JSR INIT_ILRCO_in_stop_mode
+  780  0000BCA4 20 02 BE    		JSR INIT_ADC
+  781  0000BCA7 20 5F C2    		JSR INIT_RTC
+  782  0000BCAA 20 E3 C2    		JSR INIT_WDT
+  783  0000BCAD 20 D9 BD    		JSR INIT_AC0
+  784  0000BCB0 20 9F BD    		JSR INIT_BOD1
+  785  0000BCB3 58          		CLI
+  786                     		;LDA #5Ah ; 'z'
+  787                     	    ;JSR UART_SEND_BYTE
+  Tue Nov 10 15:48:54 2026                                                                                               Page   15
+
+
+
+
+  788  0000BCB4             		
+  789  0000BCB4             	main_loop:
+  790  0000BCB4 20 F8 C2    	    JSR CLEAR_WDT
+  791  0000BCB7             		
+  792  0000BCB7             	CHECK_RTC_LOOP:
+  793  0000BCB7 A5 2B       	    LDA RTC_TICK
+  794  0000BCB9 F0 08       	    BEQ CHECK_BOD1_WAKE         ; <--- 秒數更新完後，先檢查是否為 BOD1 過溫喚醒
+  795  0000BCBB C6 2B       	    DEC RTC_TICK                ; 消耗 1 秒
+  796  0000BCBD 20 27 C1    	    JSR UPDATE_CALENDAR         ; 執行 6502 萬年曆進位 (耗時僅數十微秒)
+  797  0000BCC0 4C B7 BC    	    JMP CHECK_RTC_LOOP          ; 若剛剛收長封包累積了 2 秒，把它一次補齊
+  798                     	
+  799  0000BCC3             	CHECK_BOD1_WAKE:
+  800  0000BCC3 A5 4F       	    LDA BOD1_WAKE_FLAG
+  801  0000BCC5 F0 19       	    BEQ CHECK_AC0_WAKE          ; 若不是 BOD1 過壓喚醒，繼續檢查是否為 AC0 過溫喚醒
+  802                     	
+  803  0000BCC7 A9 00       	    LDA #00h
+  804  0000BCC9 85 4F       	    STA BOD1_WAKE_FLAG          ; 清除過壓喚醒旗標
+  805                     	
+  806                     	    ; 主動填入封包前 3 個 Bytes: [Tag, Device ID, Cmd]
+  807  0000BCCB A9 DD       	    LDA #0DDh                   ; 自訂過壓告警 Tag (DDh，與過溫的 EEh 區分)
+  808  0000BCCD 85 0B       	    STA RX_BUF                  ; RX_BUF[0] = Tag
+  809  0000BCCF A9 01       	    LDA #MY_DEV_ID              
+  810  0000BCD1 85 0C       	    STA RX_BUF+1                ; RX_BUF[1] = 01h (Device ID)
+  811  0000BCD3 A9 02       	    LDA #02h                   
+  812  0000BCD5 85 0D       	    STA RX_BUF+2                ; RX_BUF[2] = 02h (Command，也可改為 02h 區分)
+  813                     	
+  814                     	    ; 取樣 RTC + IVR14 + VDD + NTC 並填入 RX_BUF+3 ~ +16
+  815  0000BCD7 20 C5 C0    	    JSR FILL_CALENDAR_RESP
+  816                     	    ; 透過 UART 主動將封包傳送出去
+  817  0000BCDA 20 0E C2    	    JSR SEND_RESPONSE_WITH_TAG
+  818                     	    ; 傳送完畢，直接準備進入休眠
+  819  0000BCDD 4C 70 BD    	    JMP SLEEP_AGAIN
+  820                     	
+  821  0000BCE0             	CHECK_AC0_WAKE:
+  822  0000BCE0 A5 4C       	    LDA AC0_WAKE_FLAG
+  823  0000BCE2 F0 19       	    BEQ CHECK_UART_WAKE         ; 若不是過溫喚醒，繼續檢查是否為 UART 喚醒
+  824                     	
+  825  0000BCE4 A9 00       	    LDA #00h
+  826  0000BCE6 85 4C       	    STA AC0_WAKE_FLAG           ; 清除過溫喚醒旗標
+  827                     	
+  828                     	    ; 主動填入封包前 3 個 Bytes: [Tag, Device ID, Cmd]
+  829  0000BCE8 A9 EE       	    LDA #0EEh                   ; 自訂主動告警 Tag (例如 EEh，或使用 LDA RX_TAG)
+  830  0000BCEA 85 0B       	    STA RX_BUF                  ; RX_BUF[0] = Tag
+  831  0000BCEC A9 01       	    LDA #MY_DEV_ID              
+  832  0000BCEE 85 0C       	    STA RX_BUF+1                ; RX_BUF[1] = 01h (Device ID)
+  833  0000BCF0 A9 03       	    LDA #03h                   
+  834  0000BCF2 85 0D       	    STA RX_BUF+2                ; RX_BUF[2] = 03h (Command)
+  835                     	
+  836                     	    ; 取樣 RTC + IVR14 + VDD + NTC 並填入 RX_BUF+3 ~ +16
+  837  0000BCF4 20 C5 C0    	    JSR FILL_CALENDAR_RESP
+  838                     	    ; 透過 UART 主動將 17 Bytes 封包傳送出去
+  839  0000BCF7 20 0E C2    	    JSR SEND_RESPONSE_WITH_TAG
+  840                     	    ; 傳送完畢，直接準備進入休眠
+  841  0000BCFA 4C 70 BD    	    JMP SLEEP_AGAIN
+  842                     	
+  843                     	
+  844  0000BCFD             	CHECK_UART_WAKE:
+  Tue Nov 10 15:48:54 2026                                                                                               Page   16
+
+
+
+
+  845  0000BCFD A5 02       	    LDA WAKEUP_FLAG
+  846  0000BCFF F0 73       	    BEQ GO_SLEEP                ; 若不是被 UART 喚醒的 (純粹是 RTC 醒來更新秒數)，立刻回去睡�
+                            �！
+  847  0000BD01             		
+  848  0000BD01 D8          		CLD
+  849                     	; ===================================================
+  850                     	    ; 階段 1：等待 55h (第一個 FF 已作為喚醒信號消耗掉)
+  851                     	    ; ===================================================
+  852  0000BD02             	RELOAD_55_TIMEOUT:
+  853  0000BD02 20 F1 C1    	    JSR WAIT_UART_BYTE          ; 呼叫帶 Timeout 的等待收 Byte 副程式
+  854  0000BD05 B0 69       	    BCS SLEEP_AGAIN             ; 若 Carry=1 代表 Timeout 超時，直接去睡覺！
+  855                     	
+  856  0000BD07 A5 04       	    LDA RX_DATA
+  857  0000BD09 C9 FF       	    CMP #0FFh                   ; 如果剛好收到殘留的 FFh (例如沒睡著時收到的)
+  858  0000BD0B F0 F5       	    BEQ RELOAD_55_TIMEOUT       ; 忽略 FFh，重置 Timeout 繼續等 55h！
+  859                     	
+  860  0000BD0D C9 55       	    CMP #55h                    ; 確認是否為 55h？
+  861  0000BD0F D0 5F       	    BNE SLEEP_AGAIN             ; 不是 55h，代表是雜訊，立刻回去睡覺省電！
+  862                     	
+  863                     	    ; ===================================================
+  864                     	    ; 階段 2：收到 55h 了！等待 Length 欄位
+  865                     	    ; ===================================================
+  866  0000BD11 A9 00       	    LDA #00h
+  867  0000BD13 85 09       	    STA CHK_SUM                 ; Checksum 累加器清零
+  868                     	
+  869  0000BD15 20 F1 C1    	    JSR WAIT_UART_BYTE
+  870  0000BD18 B0 56       	    BCS SLEEP_AGAIN             ; Timeout 則放棄去睡覺
+  871                     	
+  872  0000BD1A A5 04       	    LDA RX_DATA
+  873  0000BD1C C9 03       	    CMP #03h                    ; 檢查最小長度 (至少要有 Tag + Mode + Cmd = 3 bytes)
+  874  0000BD1E 90 50       	    BCC SLEEP_AGAIN             ; Length < 3 視為異常，去睡覺
+  875  0000BD20 C9 20       	    CMP #20h                    ; 檢查最大長度 (不得超過 RX_BUF 32 bytes)
+  876  0000BD22 B0 4C       	    BCS SLEEP_AGAIN             ; Length >= 32 視為異常，保護 RAM 去睡覺
+  877                     	
+  878  0000BD24 85 08       	    STA PKT_LEN                 ; 存入長度計數器
+  879  0000BD26 85 07       		STA SAVE_LEN                ; <---備份起來給回傳副程式用
+  880  0000BD28 85 09       	    STA CHK_SUM                 ; Length 本身是第一個加入 Checksum 的數值
+  881                     	
+  882                     	    ; ===================================================
+  883                     	    ; 階段 3：依序接收 [Tag, Mode, Cmd, Data...] 共 PKT_LEN 個 Bytes
+  884                     	    ; ===================================================
+  885  0000BD2A A2 00       	    LDX #00h                    ; X 作為 RX_BUF 的索引指標
+  886  0000BD2C             	WAIT_PAYLOAD_LOOP:
+  887  0000BD2C 20 F1 C1    	    JSR WAIT_UART_BYTE
+  888  0000BD2F B0 3F       	    BCS SLEEP_AGAIN             ; 中途斷線 Timeout 則去睡覺
+  889                     	
+  890  0000BD31 A5 04       	    LDA RX_DATA
+  891  0000BD33 95 0B       	    STA RX_BUF,X               ; 依序存入 RX_BUF (RX_BUF+0 就是 Tag！)
+  892  0000BD35             	    
+  893  0000BD35 18          	    CLC
+  894  0000BD36 65 09       	    ADC CHK_SUM                 ; 累加進 Checksum
+  895  0000BD38 85 09       	    STA CHK_SUM
+  896                     	
+  897  0000BD3A E8          	    INX
+  898  0000BD3B C6 08       	    DEC PKT_LEN                 ; 剩餘長度 - 1
+  899  0000BD3D D0 ED       	    BNE WAIT_PAYLOAD_LOOP       ; 還沒收完就繼續收
+  900                     	
+  Tue Nov 10 15:48:54 2026                                                                                               Page   17
+
+
+
+
+  901                     	    ; ===================================================
+  902                     	    ; 階段 4：接收最後 1 個 Byte (Checksum) 並驗證
+  903                     	    ; ===================================================
+  904  0000BD3F 20 F1 C1    	    JSR WAIT_UART_BYTE
+  905  0000BD42 B0 2C       	    BCS SLEEP_AGAIN
+  906                     	
+  907  0000BD44 A5 04       	    LDA RX_DATA
+  908  0000BD46 18          	    CLC
+  909  0000BD47 65 09       	    ADC CHK_SUM                 ; 把收到的 Checksum 加進總和
+  910  0000BD49 D0 25       	    BNE SLEEP_AGAIN             ; 【關鍵】若總和 != 00h，代表 Checksum 錯誤，丟棄去睡覺！
+  911                     	
+  912                     	    ; ===================================================
+  913                     	    ; 階段 5：封包 100% 正確！提取 Tag 並檢查 Mode / ID
+  914                     	    ; ===================================================
+  915  0000BD4B A5 0B       	    LDA RX_BUF                  ; RX_BUF[0] 就是上層定義的亂數 Tag
+  916  0000BD4D 85 0A       	    STA RX_TAG                  ; 把 Tag 留存起來！
+  917                     	
+  918  0000BD4F A5 0C       	    LDA RX_BUF+1                ; RX_BUF[1] 是 Mode (或 Device ID)
+  919  0000BD51 F0 04       		BEQ CHECK_COMMAND           ; 如果 ID 是 00h (通用)，跳過比對
+  920  0000BD53 C9 01       	    CMP #MY_DEV_ID              ; 檢查是不是找我的 (01h)
+  921  0000BD55 D0 19       	    BNE SLEEP_AGAIN             ; 不是找我的，直接去睡覺
+  922                     	
+  923  0000BD57             	CHECK_COMMAND:
+  924                     	    ; --- 指令分發 ---
+  925  0000BD57 A5 0D       	    LDA RX_BUF+2                ; 取出 Command (RX_BUF+2)
+  926  0000BD59             	    
+  927  0000BD59 C9 01       	    CMP #01h                    ; 【修改】將原本的 AAh 改成 01h (查詢時間指令)
+  928  0000BD5B F0 04       	    BEQ CMD_01_HANDLER
+  929  0000BD5D             	    
+  930  0000BD5D C9 00       	    CMP #00h                    ; 【新增】判斷是否為 00h (設定時間指令)
+  931  0000BD5F F0 06       	    BEQ CMD_00_HANDLER
+  932                     	
+  933  0000BD61             	CMD_01_HANDLER:
+  934  0000BD61 20 C5 C0    	    JSR FILL_CALENDAR_RESP      ; 填入時間與感測器資料
+  935  0000BD64 4C 6D BD    	    JMP NORMAL_ECHO_RESP
+  936                     	
+  937  0000BD67             	CMD_00_HANDLER:
+  938  0000BD67 20 7A BD    	    JSR UPDATE_RTC_FROM_UART    ; 呼叫更新時間副程式
+  939  0000BD6A 4C 6D BD    	    JMP NORMAL_ECHO_RESP        ; 更新完畢後，把原封包 Echo 回去作為 ACK (確認)
+  940                     	
+  941  0000BD6D             	NORMAL_ECHO_RESP:
+  942  0000BD6D 20 0E C2    	    JSR SEND_RESPONSE_WITH_TAG
+  943                     	
+  944  0000BD70             	SLEEP_AGAIN:
+  945  0000BD70 A9 00       	    LDA #00h
+  946  0000BD72 85 02       	    STA WAKEUP_FLAG             ; 把喚醒旗標清零
+  947                     	
+  948  0000BD74             	GO_SLEEP:
+  949  0000BD74 20 94 C2    	    JSR PREPARE_SLEEP           ; 關 UART、開 INT2、進 STOP
+  950  0000BD77 4C B4 BC    	    JMP main_loop 
+  951                     	; =====================================================
+  952                     	; 透過 UART 接收到的 00h 指令封包來更新萬年曆時間
+  953                     	; 封包格式：FF 55 Length Tag ID Cmd(00) 年H 年L 月 日 時 分 秒 週 [CheckSum]
+  954                     	; =====================================================
+  955  0000BD7A             	UPDATE_RTC_FROM_UART:
+  956  0000BD7A A5 0E       	    LDA RX_BUF+3
+  957  0000BD7C 85 2D       	    STA CAL_YEAR_H              ; 年 (高位，例如 07h)
+  Tue Nov 10 15:48:54 2026                                                                                               Page   18
+
+
+
+
+  958  0000BD7E A5 0F       	    LDA RX_BUF+4
+  959  0000BD80 85 2C       	    STA CAL_YEAR_L              ; 年 (低位，例如 EAh = 2026)
+  960  0000BD82 A5 10       	    LDA RX_BUF+5
+  961  0000BD84 85 2E       	    STA CAL_MONTH               ; 月 (1~12)
+  962  0000BD86 A5 11       	    LDA RX_BUF+6
+  963  0000BD88 85 2F       	    STA CAL_DAY                 ; 日 (1~31)
+  964  0000BD8A A5 12       	    LDA RX_BUF+7
+  965  0000BD8C 85 30       	    STA CAL_HOUR                ; 時 (0~23)
+  966  0000BD8E A5 13       	    LDA RX_BUF+8
+  967  0000BD90 85 31       	    STA CAL_MIN                 ; 分 (0~59)
+  968  0000BD92 A5 14       	    LDA RX_BUF+9
+  969  0000BD94 85 32       	    STA CAL_SEC                 ; 秒 (0~59)
+  970  0000BD96 A5 15       	    LDA RX_BUF+10
+  971  0000BD98 85 33       	    STA CAL_WEEK                ; 週 (0~6)
+  972  0000BD9A             	    
+  973                     	    ; 清除 RTC_TICK，避免剛寫入新時間後，前一次休眠殘留的秒數又觸發進位
+  974  0000BD9A A9 00       	    LDA #00h
+  975  0000BD9C 85 2B       	    STA RTC_TICK
+  976  0000BD9E             	    
+  977  0000BD9E 60          	    RTS
+  978  0000BD9F             		
+  979                     	; =====================================================
+  980                     	; 初始化 BOD1 監控 VDD > 4.2V 
+  981                     	; =====================================================
+  982  0000BD9F             	INIT_BOD1:
+  983                     	    ; 1. 開啟 BOD1 模組時脈 (MCK_CTL Bit 5: BO1CE = 1)
+  984  0000BD9F A9 5A       	    LDA #PWPR_Key
+  985  0000BDA1 8D 0F 30    	    STA PWPR
+  986  0000BDA4 AD 12 30    	    LDA MCK_CTL
+  987  0000BDA7 09 20       	    ORA #20h
+  988  0000BDA9 8D 12 30    	    STA MCK_CTL
+  989                     	
+  990                     	    ; 2. 寫入真正的 4.2V 門檻 (硬體實際上是有 BO1CFG0 的！)
+  991  0000BDAC A9 5A       	    LDA #PWPR_Key
+  992  0000BDAE 8D 0F 30    	    STA PWPR
+  993  0000BDB1 A9 88       	    LDA #88h
+  994  0000BDB3 8D 29 30    	    STA BO1CFG0
+  995  0000BDB6             	    
+  996                     	    ; 3. 設定 BO1CR0 為 Static 模式
+  997  0000BDB6 A9 5A       	    LDA #PWPR_Key
+  998  0000BDB8 8D 0F 30    	    STA PWPR
+  999  0000BDBB A9 00       	    LDA #00h
+ 1000  0000BDBD 8D 28 30    	    STA BO1CR0
+ 1001                     	
+ 1002                     	    ; 4. 啟用 BOD1 (AWBOD1=1, EBOD1=1 -> 0Ah)
+ 1003  0000BDC0 A9 5A       	    LDA #PWPR_Key
+ 1004  0000BDC2 8D 0F 30    	    STA PWPR
+ 1005  0000BDC5 AD 1E 30    	    LDA PWR_CR1
+ 1006  0000BDC8 29 0F       	    AND #0Fh                    ; 確保高位元乾淨
+ 1007  0000BDCA 09 0A       	    ORA #0Ah                    ; 啟用 BOD1
+ 1008  0000BDCC 8D 1E 30    	    STA PWR_CR1
+ 1009                     	
+ 1010                     	    ; 5. 延遲等待 BOD1 比較器電壓穩定 (約 200us)
+ 1011  0000BDCF A2 FF       	    LDX #0FFh
+ 1012  0000BDD1             	WAIT_BOD1_INIT:
+ 1013  0000BDD1 CA          	    DEX
+ 1014  0000BDD2 D0 FD       	    BNE WAIT_BOD1_INIT
+  Tue Nov 10 15:48:54 2026                                                                                               Page   19
+
+
+
+
+ 1015                     	
+ 1016                     	    ; 6. 清除 BO1RF/BO1FF 歷史中斷旗標
+ 1017  0000BDD4 A9 C0       	    LDA #C0h
+ 1018  0000BDD6 85 E2       	    STA IRQ1_STS
+ 1019  0000BDD8 60          	    RTS
+ 1020                     	; =====================================================
+ 1021                     	; 初始化 AC0 為 NTC ACMP 模式 (Sleep 時維持開啟)
+ 1022                     	; =====================================================
+ 1023  0000BDD9             	INIT_AC0:
+ 1024                     	    ; 1. 開啟 AC0 模組時脈 (MCK_CTL Bit 4: AC0CE = 1)
+ 1025  0000BDD9 A9 5A       	    LDA #PWPR_Key
+ 1026  0000BDDB 8D 0F 30    	    STA PWPR
+ 1027  0000BDDE AD 12 30    	    LDA MCK_CTL
+ 1028  0000BDE1 09 10       	    ORA #10h
+ 1029  0000BDE3 8D 12 30    	    STA MCK_CTL
+ 1030                     	
+ 1031                     	    ; 2. 設定 AC0CFG1 (0x302E) 內部電阻分壓閾值 R2S[3:0] (預設 80h，可依 55度硬體設計調整)
+ 1032                     	     ;LDA #08h
+ 1033                     	     ;STA AC0CR1
+ 1034                     	
+ 1035                     	    ; 3. 開啟恆流源 (AC0CR1: 08h=小電流 CCA1=1, 0Ch=大電流 CCA1=1&CCA0=1)
+ 1036  0000BDE6 A9 0C       	    LDA #0Ch                    ; 依您 55度硬體設定選擇 #0Ch (大電流) 或 #08h (小電流)
+ 1037  0000BDE8 8D 2D 30    	    STA AC0CR1
+ 1038                     	
+ 1039                     	    ; 4. 設定 AC0CR0 (0x302C):
+ 1040                     	    ;    Bit 6 (AC0PDX) = 1 (STOP 模式下繼續運作)
+ 1041                     	    ;    Bit 3 (AC0EN)  = 1 (致能 AC0)
+ 1042                     	    ;    Bit 1:0 (AC0M) = 01b (Static ACMP for NTC) -> 0100_1001b = 49h
+ 1043  0000BDEB A9 49       	    LDA #49h
+ 1044  0000BDED 8D 2C 30    	    STA AC0CR0
+ 1045                     	
+ 1046                     	    ; 5. 稍微延遲讓比較器輸出穩定後，再清除旗標
+ 1047  0000BDF0 A2 FF       	    LDX #FFh
+ 1048  0000BDF2             	WAIT_AC0_INIT:
+ 1049  0000BDF2 CA          	    DEX
+ 1050  0000BDF3 D0 FD       	    BNE WAIT_AC0_INIT
+ 1051                     	
+ 1052                     	    ; 6. 寫 1 清除 AC0RF (Bit 5) 與 AC0FF (Bit 4) 歷史旗標
+ 1053  0000BDF5 A9 30       	    LDA #30h
+ 1054  0000BDF7 85 E2       	    STA IRQ1_STS
+ 1055                     	
+ 1056                     	    ; 7. 開啟 AC0RF 中斷 (IRQ1_EN Bit 5: EAC0R = 20h；若為負緣/低準位則改用 #10h EAC0F)
+ 1057  0000BDF9 AD 02 30    	    LDA IRQ1_EN
+ 1058  0000BDFC 09 20       	    ORA #20h
+ 1059  0000BDFE 8D 02 30    	    STA IRQ1_EN
+ 1060  0000BE01 60          	    RTS
+ 1061                     	; =====================================================
+ 1062                     	; 初始化 ADC 硬體設定 
+ 1063                     	; =====================================================
+ 1064  0000BE02             	INIT_ADC:
+ 1065                     	    ; 1. 開啟 ADC 模組時脈 (MCK_CTL 的 ADCE 位元，若預設已開可保留)
+ 1066  0000BE02 A9 5A       		LDA #PWPR_Key           ; 載入 5Ah 密碼以解除寫保護機制[cite: 1]
+ 1067  0000BE04 8D 0F 30    	    STA PWPR
+ 1068  0000BE07 AD 12 30    	    LDA MCK_CTL
+ 1069  0000BE0A 09 08       	    ORA #08h                    ; 確保 ADC Clock Enable 開啟
+ 1070  0000BE0C 8D 12 30    	    STA MCK_CTL
+ 1071                     	
+  Tue Nov 10 15:48:54 2026                                                                                               Page   20
+
+
+
+
+ 1072                     	    ; 2. 設定 ADCFG0：時脈 = SYSCLK/2 (ADC_SYSCLKD2) + 向右對齊 (ADRJ)
+ 1073  0000BE0F AD 23 30    	    LDA ADCFG0
+ 1074  0000BE12 09 30       	    ORA #30h
+ 1075  0000BE14 8D 23 30    	    STA ADCFG0
+ 1076                     	
+ 1077                     	    ; 3. 設定 ADCFG1：最高轉換功耗 (ADC_HighestPower)
+ 1078  0000BE17 AD 24 30    	    LDA ADCFG1
+ 1079  0000BE1A 29 3F       	    AND #3Fh
+ 1080  0000BE1C 8D 24 30    	    STA ADCFG1
+ 1081                     	
+ 1082                     	    ; 4. 預設先關閉 ADC 省電，等要量測時再開啟
+ 1083  0000BE1F A9 00       	    LDA #00h
+ 1084  0000BE21 8D 20 30    	    STA ADCON
+ 1085  0000BE24 60          	    RTS
+ 1086                     	
+ 1087                     	; =====================================================
+ 1088                     	; 共用副程式：取 10 次 ADC、去頭去尾、平均 8 次
+ 1089                     	; 輸入：A 暫存器帶入要寫入 ADCON 的設定值
+ 1090                     	; 輸出：ADC_RAW_H, ADC_RAW_L 為精華平均值
+ 1091                     	; =====================================================
+ 1092  0000BE25             	GET_ADC_AVG_10X:
+ 1093  0000BE25 8D 20 30    	    STA ADCON                   ; 寫入通道與開啟 ADC
+ 1094                     	    ; 初始化濾波變數
+ 1095  0000BE28 A9 00       	    LDA #00h
+ 1096  0000BE2A 85 41       	    STA SUM_L
+ 1097  0000BE2C 85 42       	    STA SUM_H
+ 1098  0000BE2E 85 43       	    STA MAX_L
+ 1099  0000BE30 85 44       	    STA MAX_H
+ 1100  0000BE32 A9 FF       	    LDA #0FFh
+ 1101  0000BE34 85 45       	    STA MIN_L
+ 1102  0000BE36 85 46       	    STA MIN_H
+ 1103  0000BE38 A9 0A       	    LDA #0Ah
+ 1104  0000BE3A 85 40       	    STA ADC_CNT
+ 1105  0000BE3C             	    
+ 1106  0000BE3C A2 FF       	    LDX #0FFh                   ; 延遲等待電壓穩定
+ 1107  0000BE3E             	WAIT_ADC_STB:
+ 1108  0000BE3E CA          	    DEX
+ 1109  0000BE3F D0 FD       	    BNE WAIT_ADC_STB
+ 1110                     	
+ 1111  0000BE41             	ADC_SAMPLE_LOOP:
+ 1112  0000BE41 A5 E2       	    LDA IRQ1_STS
+ 1113  0000BE43 09 08       	    ORA #08h                    ; 寫 1 清除 ADCI
+ 1114  0000BE45 85 E2       	    STA IRQ1_STS
+ 1115  0000BE47 AD 20 30    	    LDA ADCON
+ 1116  0000BE4A 09 40       	    ORA #40h                    ; ADCS = 1 (啟動)
+ 1117  0000BE4C 8D 20 30    	    STA ADCON
+ 1118                     	
+ 1119  0000BE4F             	WAIT_ADC_RDY:
+ 1120  0000BE4F A5 E2       	    LDA IRQ1_STS
+ 1121  0000BE51 29 08       	    AND #08h
+ 1122  0000BE53 F0 FA       	    BEQ WAIT_ADC_RDY
+ 1123  0000BE55 A9 08       	    LDA #08h
+ 1124  0000BE57 85 E2       	    STA IRQ1_STS
+ 1125                     	
+ 1126  0000BE59 AD 21 30    	    LDA ADCDL
+ 1127  0000BE5C 85 36       	    STA ADC_RAW_L
+ 1128  0000BE5E AD 22 30    	    LDA ADCDH0
+  Tue Nov 10 15:48:54 2026                                                                                               Page   21
+
+
+
+
+ 1129  0000BE61 29 0F       	    AND #0Fh
+ 1130  0000BE63 85 37       	    STA ADC_RAW_H
+ 1131                     	
+ 1132                     	    ; 累加 SUM
+ 1133  0000BE65 18          	    CLC
+ 1134  0000BE66 A5 41       	    LDA SUM_L
+ 1135  0000BE68 65 36       	    ADC ADC_RAW_L
+ 1136  0000BE6A 85 41       	    STA SUM_L
+ 1137  0000BE6C A5 42       	    LDA SUM_H
+ 1138  0000BE6E 65 37       	    ADC ADC_RAW_H
+ 1139  0000BE70 85 42       	    STA SUM_H
+ 1140                     	
+ 1141                     	    ; 更新 MAX
+ 1142  0000BE72 A5 37       	    LDA ADC_RAW_H
+ 1143  0000BE74 C5 44       	    CMP MAX_H
+ 1144  0000BE76 90 12       	    BCC CHECK_MIN
+ 1145  0000BE78 D0 08       	    BNE UPDATE_MAX
+ 1146  0000BE7A A5 36       	    LDA ADC_RAW_L
+ 1147  0000BE7C C5 43       	    CMP MAX_L
+ 1148  0000BE7E 90 0A       	    BCC CHECK_MIN
+ 1149  0000BE80 F0 08       	    BEQ CHECK_MIN
+ 1150  0000BE82             	UPDATE_MAX:
+ 1151  0000BE82 A5 36       	    LDA ADC_RAW_L
+ 1152  0000BE84 85 43       	    STA MAX_L
+ 1153  0000BE86 A5 37       	    LDA ADC_RAW_H
+ 1154  0000BE88 85 44       	    STA MAX_H
+ 1155                     	
+ 1156                     	    ; 更新 MIN
+ 1157  0000BE8A             	CHECK_MIN:
+ 1158  0000BE8A A5 37       	    LDA ADC_RAW_H
+ 1159  0000BE8C C5 46       	    CMP MIN_H
+ 1160  0000BE8E 90 08       	    BCC UPDATE_MIN
+ 1161  0000BE90 D0 0E       	    BNE NEXT_SAMPLE
+ 1162  0000BE92 A5 36       	    LDA ADC_RAW_L
+ 1163  0000BE94 C5 45       	    CMP MIN_L
+ 1164  0000BE96 B0 08       	    BCS NEXT_SAMPLE
+ 1165  0000BE98             	UPDATE_MIN:
+ 1166  0000BE98 A5 36       	    LDA ADC_RAW_L
+ 1167  0000BE9A 85 45       	    STA MIN_L
+ 1168  0000BE9C A5 37       	    LDA ADC_RAW_H
+ 1169  0000BE9E 85 46       	    STA MIN_H
+ 1170                     	
+ 1171  0000BEA0             	NEXT_SAMPLE:
+ 1172  0000BEA0 C6 40       	    DEC ADC_CNT
+ 1173  0000BEA2 D0 9D       	    BNE ADC_SAMPLE_LOOP
+ 1174                     	
+ 1175                     	    ; 關閉 ADC 省電
+ 1176  0000BEA4 AD 20 30    	    LDA ADCON
+ 1177  0000BEA7 29 5F       	    AND #.not.0A0h              ; 清除 ADCEN, IVREN
+ 1178  0000BEA9 8D 20 30    	    STA ADCON
+ 1179                     	
+ 1180                     	    ; 去頭去尾 (SUM - MAX - MIN)
+ 1181  0000BEAC 38          	    SEC
+ 1182  0000BEAD A5 41       	    LDA SUM_L
+ 1183  0000BEAF E5 43       	    SBC MAX_L
+ 1184  0000BEB1 85 41       	    STA SUM_L
+ 1185  0000BEB3 A5 42       	    LDA SUM_H
+  Tue Nov 10 15:48:54 2026                                                                                               Page   22
+
+
+
+
+ 1186  0000BEB5 E5 44       	    SBC MAX_H
+ 1187  0000BEB7 85 42       	    STA SUM_H
+ 1188                     	
+ 1189  0000BEB9 38          	    SEC
+ 1190  0000BEBA A5 41       	    LDA SUM_L
+ 1191  0000BEBC E5 45       	    SBC MIN_L
+ 1192  0000BEBE 85 41       	    STA SUM_L
+ 1193  0000BEC0 A5 42       	    LDA SUM_H
+ 1194  0000BEC2 E5 46       	    SBC MIN_H
+ 1195  0000BEC4 85 42       	    STA SUM_H
+ 1196                     	
+ 1197                     	    ; 平均 8 次 (右移 3 次)
+ 1198  0000BEC6 A2 03       	    LDX #03h
+ 1199  0000BEC8             	SHIFT_AVG_LOOP:
+ 1200  0000BEC8 46 42       	    LSR SUM_H
+ 1201  0000BECA 66 41       	    ROR SUM_L
+ 1202  0000BECC CA          	    DEX
+ 1203  0000BECD D0 F9       	    BNE SHIFT_AVG_LOOP
+ 1204                     	
+ 1205  0000BECF A5 41       	    LDA SUM_L
+ 1206  0000BED1 85 36       	    STA ADC_RAW_L
+ 1207  0000BED3 A5 42       	    LDA SUM_H
+ 1208  0000BED5 85 37       	    STA ADC_RAW_H
+ 1209  0000BED7 60          	    RTS
+ 1210                     	
+ 1211                     	; =====================================================
+ 1212                     	; 以 Polling 方式量測 IVR (1.4V) 並反推回傳 VDD_INT 與 VDD_DEC
+ 1213                     	; 公式：VDD = 5734.4 / ADC_RAW
+ 1214                     	; =====================================================
+ 1215  0000BED8             	READ_VDD_BY_IVR:
+ 1216                     	
+ 1217  0000BED8             		
+ 1218                     	    ; --- 步驟 1：選擇 IVR 通道並開啟 ADC (ADCEN) ---
+ 1219  0000BED8 A9 08       	    LDA #08h               ; <--- VR 1.4V 的通道
+ 1220  0000BEDA 09 A0       	    ORA #A0h                  ; 同時設 ADCEN = 1 & IVREN = 1
+ 1221  0000BEDC 8D 20 30    	    STA ADCON
+ 1222                     	
+ 1223                     	    ; 稍微延遲 讓內部 IVR 參考電壓與取樣電容穩定
+ 1224  0000BEDF A2 FF       	    LDX #0FFh
+ 1225  0000BEE1             	WAIT_ADC_STABLE:
+ 1226  0000BEE1 CA          	    DEX
+ 1227  0000BEE2 D0 FD       	    BNE WAIT_ADC_STABLE
+ 1228                     	
+ 1229                     	; =================================================
+ 1230                     	    ; 開始 10 次 ADC 採樣迴圈
+ 1231                     	    ; =================================================
+ 1232  0000BEE4 20 25 BE    	    JSR GET_ADC_AVG_10X
+ 1233                     	; 備份 IVR 數值供 NTC 換檔判定使用！
+ 1234  0000BEE7 A5 36       	    LDA ADC_RAW_L
+ 1235  0000BEE9 85 48       	    STA IVR_RAW_L
+ 1236  0000BEEB A5 37       	    LDA ADC_RAW_H
+ 1237  0000BEED 85 49       	    STA IVR_RAW_H
+ 1238                     	
+ 1239                     	    ; 防呆
+ 1240  0000BEEF 05 36       	    ORA ADC_RAW_L
+ 1241  0000BEF1 D0 07       	    BNE CALC_VDD_START
+ 1242  0000BEF3 A9 00       	    LDA #00h
+  Tue Nov 10 15:48:54 2026                                                                                               Page   23
+
+
+
+
+ 1243  0000BEF5 85 38       	    STA VDD_INT
+ 1244  0000BEF7 85 39       	    STA VDD_DEC
+ 1245  0000BEF9 60          	    RTS
+ 1246                     	
+ 1247  0000BEFA             	CALC_VDD_START:
+ 1248                     	    ; =================================================
+ 1249                     	    ; 步驟 5：計算整數部分 VDD_INT = 5734 / ADC_RAW
+ 1250                     	    ;         5734 的十六進位 = 1666h
+ 1251                     	    ; =================================================
+ 1252  0000BEFA A9 66       	    LDA #66h
+ 1253  0000BEFC 85 3A       	    STA MATH_L
+ 1254  0000BEFE A9 16       	    LDA #16h
+ 1255  0000BF00 85 3B       	    STA MATH_M
+ 1256  0000BF02 A9 00       	    LDA #00h
+ 1257  0000BF04 85 38       	    STA VDD_INT
+ 1258                     	
+ 1259  0000BF06             	DIV_INT_LOOP:
+ 1260                     	    ; 比較 MATH_M:MATH_L 是否 >= ADC_RAW_H:ADC_RAW_L
+ 1261  0000BF06 A5 3B       	    LDA MATH_M
+ 1262  0000BF08 C5 37       	    CMP ADC_RAW_H
+ 1263  0000BF0A 90 1A       	    BCC DIV_INT_DONE            ; 若 MATH_M < ADC_RAW_H，不夠減了
+ 1264  0000BF0C D0 06       	    BNE DO_SUB_INT              ; 若 MATH_M > ADC_RAW_H，直接減
+ 1265  0000BF0E A5 3A       	    LDA MATH_L
+ 1266  0000BF10 C5 36       	    CMP ADC_RAW_L
+ 1267  0000BF12 90 12       	    BCC DIV_INT_DONE            ; 若相等且 MATH_L < ADC_RAW_L，不夠減了
+ 1268                     	
+ 1269  0000BF14             	DO_SUB_INT:
+ 1270  0000BF14 38          	    SEC
+ 1271  0000BF15 A5 3A       	    LDA MATH_L
+ 1272  0000BF17 E5 36       	    SBC ADC_RAW_L
+ 1273  0000BF19 85 3A       	    STA MATH_L
+ 1274  0000BF1B A5 3B       	    LDA MATH_M
+ 1275  0000BF1D E5 37       	    SBC ADC_RAW_H
+ 1276  0000BF1F 85 3B       	    STA MATH_M
+ 1277  0000BF21 E6 38       	    INC VDD_INT                 ; 整數商 + 1
+ 1278  0000BF23 4C 06 BF    	    JMP DIV_INT_LOOP
+ 1279                     	
+ 1280  0000BF26             	DIV_INT_DONE:
+ 1281                     	    ; =================================================
+ 1282                     	    ; 步驟 6：計算小數後兩位 VDD_DEC = (餘數 * 100 + 40) / ADC_RAW
+ 1283                     	    ; 技巧：餘數 * 100 = (餘數 * 4) + (餘數 * 32) + (餘數 * 64)
+ 1284                     	    ; =================================================
+ 1285                     	    ; 先把餘數 MATH_M:MATH_L 複製到 TEMP_R，並設最高位為 0
+ 1286  0000BF26 A5 3A       	    LDA MATH_L
+ 1287  0000BF28 85 3D       	    STA TEMP_R_L
+ 1288  0000BF2A A5 3B       	    LDA MATH_M
+ 1289  0000BF2C 85 3E       	    STA TEMP_R_M
+ 1290  0000BF2E A9 00       	    LDA #00h
+ 1291  0000BF30 85 3F       	    STA TEMP_R_H
+ 1292                     	
+ 1293                     	    ; 1. 計算 餘數 * 4 (左移 2 次)
+ 1294  0000BF32 06 3D       	    ASL TEMP_R_L
+ 1295  0000BF34 26 3E       	    ROL TEMP_R_M
+ 1296  0000BF36 26 3F       	    ROL TEMP_R_H
+ 1297  0000BF38 06 3D       	    ASL TEMP_R_L
+ 1298  0000BF3A 26 3E       	    ROL TEMP_R_M
+ 1299  0000BF3C 26 3F       	    ROL TEMP_R_H
+  Tue Nov 10 15:48:54 2026                                                                                               Page   24
+
+
+
+
+ 1300                     	
+ 1301                     	    ; 把 (餘數 * 4) 加上常數 40 (28h，補償 5734.4 的 .4) 存入 MATH (作為累加器)
+ 1302  0000BF3E 18          	    CLC
+ 1303  0000BF3F A5 3D       	    LDA TEMP_R_L
+ 1304  0000BF41 69 28       	    ADC #28h                    ; + 40
+ 1305  0000BF43 85 3A       	    STA MATH_L
+ 1306  0000BF45 A5 3E       	    LDA TEMP_R_M
+ 1307  0000BF47 69 00       	    ADC #00h
+ 1308  0000BF49 85 3B       	    STA MATH_M
+ 1309  0000BF4B A5 3F       	    LDA TEMP_R_H
+ 1310  0000BF4D 69 00       	    ADC #00h
+ 1311  0000BF4F 85 3C       	    STA MATH_H
+ 1312                     	
+ 1313                     	    ; 2. 繼續左移 3 次變成 (餘數 * 32)
+ 1314  0000BF51 06 3D       	    ASL TEMP_R_L
+ 1315  0000BF53 26 3E       	    ROL TEMP_R_M
+ 1316  0000BF55 26 3F       	    ROL TEMP_R_H
+ 1317  0000BF57 06 3D       	    ASL TEMP_R_L
+ 1318  0000BF59 26 3E       	    ROL TEMP_R_M
+ 1319  0000BF5B 26 3F       	    ROL TEMP_R_H
+ 1320  0000BF5D 06 3D       	    ASL TEMP_R_L
+ 1321  0000BF5F 26 3E       	    ROL TEMP_R_M
+ 1322  0000BF61 26 3F       	    ROL TEMP_R_H
+ 1323                     	
+ 1324                     	    ; 累加 (餘數 * 32) 到 MATH
+ 1325  0000BF63 18          	    CLC
+ 1326  0000BF64 A5 3A       	    LDA MATH_L
+ 1327  0000BF66 65 3D       	    ADC TEMP_R_L
+ 1328  0000BF68 85 3A       	    STA MATH_L
+ 1329  0000BF6A A5 3B       	    LDA MATH_M
+ 1330  0000BF6C 65 3E       	    ADC TEMP_R_M
+ 1331  0000BF6E 85 3B       	    STA MATH_M
+ 1332  0000BF70 A5 3C       	    LDA MATH_H
+ 1333  0000BF72 65 3F       	    ADC TEMP_R_H
+ 1334  0000BF74 85 3C       	    STA MATH_H
+ 1335                     	
+ 1336                     	    ; 3. 再左移 1 次變成 (餘數 * 64)
+ 1337  0000BF76 06 3D       	    ASL TEMP_R_L
+ 1338  0000BF78 26 3E       	    ROL TEMP_R_M
+ 1339  0000BF7A 26 3F       	    ROL TEMP_R_H
+ 1340                     	
+ 1341                     	    ; 累加 (餘數 * 64) 到 MATH -> 此時 MATH_H:MATH_M:MATH_L = 餘數 * 100 + 40
+ 1342  0000BF7C 18          	    CLC
+ 1343  0000BF7D A5 3A       	    LDA MATH_L
+ 1344  0000BF7F 65 3D       	    ADC TEMP_R_L
+ 1345  0000BF81 85 3A       	    STA MATH_L
+ 1346  0000BF83 A5 3B       	    LDA MATH_M
+ 1347  0000BF85 65 3E       	    ADC TEMP_R_M
+ 1348  0000BF87 85 3B       	    STA MATH_M
+ 1349  0000BF89 A5 3C       	    LDA MATH_H
+ 1350  0000BF8B 65 3F       	    ADC TEMP_R_H
+ 1351  0000BF8D 85 3C       	    STA MATH_H
+ 1352                     	
+ 1353                     	    ; 4. 進行 24-bit 減法迴圈：VDD_DEC = MATH / ADC_RAW
+ 1354  0000BF8F A9 00       	    LDA #00h
+ 1355  0000BF91 85 39       	    STA VDD_DEC
+ 1356                     	
+  Tue Nov 10 15:48:54 2026                                                                                               Page   25
+
+
+
+
+ 1357  0000BF93             	DIV_DEC_LOOP:
+ 1358                     	    ; 若最高位 MATH_H > 0，代表一定大於 12-bit 的 ADC_RAW，直接減！
+ 1359  0000BF93 A5 3C       	    LDA MATH_H
+ 1360  0000BF95 D0 0E       	    BNE DO_SUB_DEC
+ 1361                     	    ; 若 MATH_H == 0，比較 MATH_M:MATH_L 與 ADC_RAW_H:ADC_RAW_L
+ 1362  0000BF97 A5 3B       	    LDA MATH_M
+ 1363  0000BF99 C5 37       	    CMP ADC_RAW_H
+ 1364  0000BF9B 90 20       	    BCC DIV_DEC_DONE
+ 1365  0000BF9D D0 06       	    BNE DO_SUB_DEC
+ 1366  0000BF9F A5 3A       	    LDA MATH_L
+ 1367  0000BFA1 C5 36       	    CMP ADC_RAW_L
+ 1368  0000BFA3 90 18       	    BCC DIV_DEC_DONE
+ 1369                     	
+ 1370  0000BFA5             	DO_SUB_DEC:
+ 1371  0000BFA5 38          	    SEC
+ 1372  0000BFA6 A5 3A       	    LDA MATH_L
+ 1373  0000BFA8 E5 36       	    SBC ADC_RAW_L
+ 1374  0000BFAA 85 3A       	    STA MATH_L
+ 1375  0000BFAC A5 3B       	    LDA MATH_M
+ 1376  0000BFAE E5 37       	    SBC ADC_RAW_H
+ 1377  0000BFB0 85 3B       	    STA MATH_M
+ 1378  0000BFB2 A5 3C       	    LDA MATH_H
+ 1379  0000BFB4 E9 00       	    SBC #00h
+ 1380  0000BFB6 85 3C       	    STA MATH_H
+ 1381  0000BFB8 E6 39       	    INC VDD_DEC                 ; 小數商 + 1
+ 1382  0000BFBA 4C 93 BF    	    JMP DIV_DEC_LOOP
+ 1383                     	
+ 1384  0000BFBD             	DIV_DEC_DONE:
+ 1385  0000BFBD 60          	    RTS
+ 1386                     	
+ 1387                     	; =====================================================
+ 1388                     	; 自動換檔讀取 NTC 溫度 (使用 6502 交叉比例算法)
+ 1389                     	; =====================================================
+ 1390  0000BFBE             	READ_NTC_AUTO:
+ 1391                     	
+ 1392                     	; <--- 量測 ADC 前先將 AC0EN 設為 0，讓內部電流源切換至 ADC 路徑且不誤觸發中斷 --->
+ 1393  0000BFBE A9 00       	    LDA #00h
+ 1394  0000BFC0 8D 2C 30    	    STA AC0CR0
+ 1395                     	    ; 1. 根據 NTC_MODE 設定 AC0C (CCA 恆流源輸出)
+ 1396  0000BFC3 A5 47       	    LDA NTC_MODE
+ 1397  0000BFC5 F0 10       	    BEQ SET_SMALL_CURR
+ 1398  0000BFC7             		
+ 1399  0000BFC7             	SET_LARGE_CURR:
+ 1400  0000BFC7 A9 5A       	    LDA #PWPR_Key
+ 1401  0000BFC9 8D 0F 30    	    STA PWPR
+ 1402  0000BFCC AD 4D 72    	    LDA TRMCC_ADC01             ; 讀取 724Dh (大電流校準值)
+ 1403  0000BFCF 8D 08 31    	    STA OR08                    ; 寫入 3108h
+ 1404  0000BFD2 A9 0C       	    LDA #0Ch                    ; 大電流：CCA1=1, CCA0=1
+ 1405  0000BFD4 4C E4 BF    	    JMP APPLY_AC0CR1
+ 1406                     	
+ 1407  0000BFD7             	SET_SMALL_CURR:
+ 1408  0000BFD7 A9 5A       	    LDA #PWPR_Key
+ 1409  0000BFD9 8D 0F 30    	    STA PWPR
+ 1410  0000BFDC AD 52 72    	    LDA TRMCC_ADC0              ; 讀取 7252h (小電流校準值)
+ 1411  0000BFDF 8D 08 31    	    STA OR08                    ; 寫入 3108h
+ 1412  0000BFE2 A9 08       	    LDA #08h                    ; 小電流：CCA1=1, CCA0=0
+ 1413                     	
+  Tue Nov 10 15:48:54 2026                                                                                               Page   26
+
+
+
+
+ 1414  0000BFE4             	APPLY_AC0CR1:
+ 1415  0000BFE4 8D 2D 30    	    STA AC0CR1                  ; 寫入 0x302D
+ 1416                     	
+ 1417                     	; 稍微延遲讓恆流源流過外部 NTC 電阻的電壓穩定
+ 1418  0000BFE7 A2 40       	    LDX #40h
+ 1419  0000BFE9             	WAIT_CC_STABLE:
+ 1420  0000BFE9 CA          	    DEX
+ 1421  0000BFEA D0 FD       	    BNE WAIT_CC_STABLE
+ 1422                     	
+ 1423                     	    ; 2. 取樣 AIN0 (P1.0)
+ 1424  0000BFEC A9 80       	    LDA #80h                    ; ADCEN = 1, 通道 = 00h (AIN0)
+ 1425  0000BFEE 20 25 BE    	    JSR GET_ADC_AVG_10X
+ 1426                     	
+ 1427                     	    ; 3. 判定是否需要換檔
+ 1428  0000BFF1 A5 47       	    LDA NTC_MODE
+ 1429  0000BFF3 F0 4D       	    BEQ CHECK_TO_LARGE          ; 若目前是小電流，檢查是否低於 0.5V
+ 1430                     	
+ 1431                     	    ; -------------------------------------------------
+ 1432                     	    ; 大電流檢查：若 V_NTC > 1.6V (即 NTC*7 > IVR*8)，切換小電流
+ 1433                     	    ; -------------------------------------------------
+ 1434  0000BFF5             	CHECK_TO_SMALL:
+ 1435                     	    ; 計算 MATH = NTC * 7 (NTC*8 - NTC)
+ 1436  0000BFF5 A5 36       	    LDA ADC_RAW_L
+ 1437  0000BFF7 85 3A       	    STA MATH_L
+ 1438  0000BFF9 A5 37       	    LDA ADC_RAW_H
+ 1439  0000BFFB 85 3C       	    STA MATH_H
+ 1440  0000BFFD 06 3A       	    ASL MATH_L
+ 1441  0000BFFF 26 3C       	    ROL MATH_H
+ 1442  0000C001 06 3A       	    ASL MATH_L
+ 1443  0000C003 26 3C       	    ROL MATH_H
+ 1444  0000C005 06 3A       	    ASL MATH_L
+ 1445  0000C007 26 3C       	    ROL MATH_H                  ; MATH = NTC * 8
+ 1446  0000C009 38          	    SEC
+ 1447  0000C00A A5 3A       	    LDA MATH_L
+ 1448  0000C00C E5 36       	    SBC ADC_RAW_L
+ 1449  0000C00E 85 3A       	    STA MATH_L
+ 1450  0000C010 A5 3C       	    LDA MATH_H
+ 1451  0000C012 E5 37       	    SBC ADC_RAW_H
+ 1452  0000C014 85 3C       	    STA MATH_H                  ; MATH = NTC * 7
+ 1453                     	
+ 1454                     	    ; 計算 TEMP = IVR * 8
+ 1455  0000C016 A5 48       	    LDA IVR_RAW_L
+ 1456  0000C018 85 4A       	    STA TEMP_L
+ 1457  0000C01A A5 49       	    LDA IVR_RAW_H
+ 1458  0000C01C 85 4B       	    STA TEMP_H
+ 1459  0000C01E 06 4A       	    ASL TEMP_L
+ 1460  0000C020 26 4B       	    ROL TEMP_H
+ 1461  0000C022 06 4A       	    ASL TEMP_L
+ 1462  0000C024 26 4B       	    ROL TEMP_H
+ 1463  0000C026 06 4A       	    ASL TEMP_L
+ 1464  0000C028 26 4B       	    ROL TEMP_H                  ; TEMP = IVR * 8
+ 1465                     	
+ 1466                     	    ; 比較 MATH > TEMP
+ 1467  0000C02A A5 4B       	    LDA TEMP_H
+ 1468  0000C02C C5 3C       	    CMP MATH_H
+ 1469  0000C02E 90 0B       	    BCC DO_SWITCH_SMALL         ; 若 MATH_H > TEMP_H
+ 1470  0000C030 D0 70       	    BNE KEEP_MODE               ; 若 MATH_H < TEMP_H
+  Tue Nov 10 15:48:54 2026                                                                                               Page   27
+
+
+
+
+ 1471  0000C032 A5 4A       	    LDA TEMP_L
+ 1472  0000C034 C5 3A       	    CMP MATH_L
+ 1473  0000C036 90 03       	    BCC DO_SWITCH_SMALL         ; 若 MATH_L > TEMP_L
+ 1474  0000C038 4C A2 C0    	    JMP KEEP_MODE               
+ 1475                     	
+ 1476  0000C03B             	DO_SWITCH_SMALL:
+ 1477  0000C03B A9 00       	    LDA #00h
+ 1478  0000C03D 85 47       	    STA NTC_MODE
+ 1479  0000C03F 4C BE BF    	    JMP READ_NTC_AUTO           ; 立刻切換小電流並重新量測！
+ 1480                     	
+ 1481                     	    ; -------------------------------------------------
+ 1482                     	    ; 小電流檢查：若 V_NTC < 0.5V (即 NTC*14 < IVR*5)，切換大電流
+ 1483                     	    ; -------------------------------------------------
+ 1484  0000C042             	CHECK_TO_LARGE:
+ 1485                     	    ; 計算 MATH = NTC * 14 (NTC*16 - NTC*2)
+ 1486  0000C042 A5 36       	    LDA ADC_RAW_L
+ 1487  0000C044 0A          	    ASL A
+ 1488  0000C045 85 3D       	    STA TEMP_R_L
+ 1489  0000C047 A5 37       	    LDA ADC_RAW_H
+ 1490  0000C049 2A          	    ROL A
+ 1491  0000C04A 85 3F       	    STA TEMP_R_H                ; TEMP_R = NTC * 2
+ 1492  0000C04C             	    
+ 1493  0000C04C A5 3D       	    LDA TEMP_R_L
+ 1494  0000C04E 85 3A       	    STA MATH_L
+ 1495  0000C050 A5 3F       	    LDA TEMP_R_H
+ 1496  0000C052 85 3C       	    STA MATH_H
+ 1497  0000C054 06 3A       	    ASL MATH_L
+ 1498  0000C056 26 3C       	    ROL MATH_H
+ 1499  0000C058 06 3A       	    ASL MATH_L
+ 1500  0000C05A 26 3C       	    ROL MATH_H
+ 1501  0000C05C 06 3A       	    ASL MATH_L
+ 1502  0000C05E 26 3C       	    ROL MATH_H                  ; MATH = NTC * 16
+ 1503  0000C060             	    
+ 1504  0000C060 38          	    SEC
+ 1505  0000C061 A5 3A       	    LDA MATH_L
+ 1506  0000C063 E5 3D       	    SBC TEMP_R_L
+ 1507  0000C065 85 3A       	    STA MATH_L
+ 1508  0000C067 A5 3C       	    LDA MATH_H
+ 1509  0000C069 E5 3F       	    SBC TEMP_R_H
+ 1510  0000C06B 85 3C       	    STA MATH_H                  ; MATH = NTC * 14
+ 1511                     	
+ 1512                     	    ; 計算 TEMP = IVR * 5 (IVR*4 + IVR)
+ 1513  0000C06D A5 48       	    LDA IVR_RAW_L
+ 1514  0000C06F 85 4A       	    STA TEMP_L
+ 1515  0000C071 A5 49       	    LDA IVR_RAW_H
+ 1516  0000C073 85 4B       	    STA TEMP_H
+ 1517  0000C075 06 4A       	    ASL TEMP_L
+ 1518  0000C077 26 4B       	    ROL TEMP_H
+ 1519  0000C079 06 4A       	    ASL TEMP_L
+ 1520  0000C07B 26 4B       	    ROL TEMP_H                  ; TEMP = IVR * 4
+ 1521  0000C07D 18          	    CLC
+ 1522  0000C07E A5 4A       	    LDA TEMP_L
+ 1523  0000C080 65 48       	    ADC IVR_RAW_L
+ 1524  0000C082 85 4A       	    STA TEMP_L
+ 1525  0000C084 A5 4B       	    LDA TEMP_H
+ 1526  0000C086 65 49       	    ADC IVR_RAW_H
+ 1527  0000C088 85 4B       	    STA TEMP_H                  ; TEMP = IVR * 5
+  Tue Nov 10 15:48:54 2026                                                                                               Page   28
+
+
+
+
+ 1528                     	
+ 1529                     	    ; 比較 MATH < TEMP
+ 1530  0000C08A A5 3C       	    LDA MATH_H
+ 1531  0000C08C C5 4B       	    CMP TEMP_H
+ 1532  0000C08E 90 0B       	    BCC DO_SWITCH_LARGE
+ 1533  0000C090 D0 10       	    BNE KEEP_MODE
+ 1534  0000C092 A5 3A       	    LDA MATH_L
+ 1535  0000C094 C5 4A       	    CMP TEMP_L
+ 1536  0000C096 90 03       	    BCC DO_SWITCH_LARGE
+ 1537  0000C098 4C A2 C0    	    JMP KEEP_MODE
+ 1538                     	
+ 1539  0000C09B             	DO_SWITCH_LARGE:
+ 1540  0000C09B A9 01       	    LDA #01h
+ 1541  0000C09D 85 47       	    STA NTC_MODE
+ 1542  0000C09F 4C BE BF    	    JMP READ_NTC_AUTO           ; 立刻切換大電流並重新量測！
+ 1543                     	
+ 1544  0000C0A2             	KEEP_MODE:
+ 1545                     	    ; <--- 量測完畢，將 OR08 恢復為原本預設值，並開啟 AC0 睡眠監控模式 --->
+ 1546  0000C0A2 A9 5A       	    LDA #PWPR_Key
+ 1547  0000C0A4 8D 0F 30    	    STA PWPR
+ 1548  0000C0A7 A5 4E       	    LDA DEFAULT_OR08            ; 恢復原本的 OR08 數值
+ 1549  0000C0A9 8D 08 31    	    STA OR08
+ 1550                     	
+ 1551  0000C0AC A9 0C       	    LDA #0Ch                    ; 依您需求：睡眠時維持給 AC0 的電流源設定
+ 1552  0000C0AE 8D 2D 30    	    STA AC0CR1
+ 1553  0000C0B1 A9 49       	    LDA #49h                    ; 保持 AC0PDX=1, AC0EN=1, AC0M=01b (Static NTC ACMP)
+ 1554  0000C0B3 8D 2C 30    	    STA AC0CR0
+ 1555                     	
+ 1556                     	    ; 延遲等待比較器穩定
+ 1557  0000C0B6 A0 08       	    LDY #08h
+ 1558  0000C0B8             	WAIT_AC0_RES_OUTER:
+ 1559  0000C0B8 A2 FF       	    LDX #0FFh
+ 1560  0000C0BA             	WAIT_AC0_RES_INNER:
+ 1561  0000C0BA CA          	    DEX
+ 1562  0000C0BB D0 FD       	    BNE WAIT_AC0_RES_INNER
+ 1563  0000C0BD 88          	    DEY
+ 1564  0000C0BE D0 F8       	    BNE WAIT_AC0_RES_OUTER
+ 1565                     	
+ 1566  0000C0C0 A9 30       	    LDA #30h
+ 1567  0000C0C2 85 E2       	    STA IRQ1_STS
+ 1568  0000C0C4 60          	    RTS
+ 1569                     	; =====================================================
+ 1570                     	; 將萬年曆 8 個 Bytes 填入 RX_BUF+3 ~ RX_BUF+10 準備回傳
+ 1571                     	; =====================================================
+ 1572  0000C0C5             	FILL_CALENDAR_RESP:
+ 1573  0000C0C5 A5 2D       	    LDA CAL_YEAR_H              
+ 1574  0000C0C7 85 0E       	    STA RX_BUF+3                
+ 1575  0000C0C9 A5 2C       	    LDA CAL_YEAR_L              
+ 1576  0000C0CB 85 0F       	    STA RX_BUF+4                
+ 1577  0000C0CD A5 2E       	    LDA CAL_MONTH               
+ 1578  0000C0CF 85 10       	    STA RX_BUF+5                
+ 1579  0000C0D1 A5 2F       	    LDA CAL_DAY                 
+ 1580  0000C0D3 85 11       	    STA RX_BUF+6                
+ 1581  0000C0D5 A5 30       	    LDA CAL_HOUR                
+ 1582  0000C0D7 85 12       	    STA RX_BUF+7                
+ 1583                     	
+ 1584  0000C0D9 A5 31       	    LDA CAL_MIN                 
+  Tue Nov 10 15:48:54 2026                                                                                               Page   29
+
+
+
+
+ 1585  0000C0DB 85 13       	    STA RX_BUF+8                
+ 1586  0000C0DD A5 32       	    LDA CAL_SEC                 
+ 1587  0000C0DF 85 14       	    STA RX_BUF+9                
+ 1588  0000C0E1 A5 33       	    LDA CAL_WEEK                
+ 1589  0000C0E3 85 15       	    STA RX_BUF+10               
+ 1590                     	
+ 1591                     	; <--- Polling 讀取 IVR 並計算 VDD (例如 3.30V -> 03h, 1Eh) --->
+ 1592  0000C0E5 20 D8 BE    	    JSR READ_VDD_BY_IVR
+ 1593                     	
+ 1594                     	    ; 放入未經計算的 12-bit ADC IVR14原始讀值 (High Byte & Low Byte)
+ 1595  0000C0E8 A5 37       	    LDA ADC_RAW_H               ; 計算前：ADC 原始高 4-bit (例如 07h)
+ 1596  0000C0EA 85 16       	    STA RX_BUF+11
+ 1597  0000C0EC A5 36       	    LDA ADC_RAW_L               ; 計算前：ADC 原始低 8-bit (例如 CEh)
+ 1598  0000C0EE 85 17       	    STA RX_BUF+12
+ 1599                     	
+ 1600                     	    ; 放入計算後的 VDD 整數與小數後兩位
+ 1601  0000C0F0 A5 38       	    LDA VDD_INT                 ; 計算後：VDD 整數部分 (例如 03h)
+ 1602  0000C0F2 85 18       	    STA RX_BUF+13
+ 1603  0000C0F4 A5 39       	    LDA VDD_DEC                 ; 計算後：VDD 小數後兩位 (例如 00h)
+ 1604  0000C0F6 85 19       	    STA RX_BUF+14
+ 1605                     	
+ 1606                     	;  Polling 讀取 NTC (含自動換檔)
+ 1607  0000C0F8 20 BE BF    	    JSR READ_NTC_AUTO
+ 1608                     	
+ 1609                     	    ; 3. 組合 NTC 回傳格式：
+ 1610                     	    ;    Bit 7 = NTC_MODE (1:大電流, 0:小電流)
+ 1611                     	    ;    Bit 6 = OT_LOCK_FLAG (1:過溫鎖定中, 0:未鎖定)  <-- 【新增檢查點】
+ 1612                     	    ;    Bit 5 = AC0O 即時狀態 (1:AC0O=1過溫, 0:AC0O=0常溫) <-- 【新增檢查點】
+ 1613                     	    ;    Bit 3:0 = ADC_RAW_H (12-bit ADC 高 4 位元)
+ 1614  0000C0FB A5 37       	    LDA ADC_RAW_H
+ 1615  0000C0FD 29 0F       	    AND #0Fh                    ; 確保只取低 4 bits
+ 1616                     	
+ 1617                     	    ; --- 塞入 Bit 7: 大小電流旗標 ---
+ 1618  0000C0FF A6 47       	    LDX NTC_MODE
+ 1619  0000C101 F0 02       	    BEQ PACK_CHECK_AC0O         ; 若為小電流 (0)，Bit 7 維持 0
+ 1620  0000C103 09 80       	    ORA #80h                    ; 若為大電流 (1)，Bit 7 設為 1
+ 1621                     	
+ 1622  0000C105             	PACK_CHECK_AC0O:
+ 1623                     	    ; --- 【新增檢查點 1】塞入 Bit 5: 讀取 AC0CR0 的 Bit 5 (AC0O 即時輸出) ---
+ 1624  0000C105 48          	    PHA                         ; 先把 A 存起來
+ 1625  0000C106 AD 2C 30    	    LDA AC0CR0
+ 1626  0000C109 29 20       	    AND #20h                    ; 只取出 Bit 5 (AC0O)
+ 1627  0000C10B 85 4A       	    STA TEMP_L                  ; 暫存到 TEMP_L
+ 1628  0000C10D 68          	    PLA                         ; 取回 A
+ 1629  0000C10E 05 4A       	    ORA TEMP_L                  ; 把 AC0O 塞進 Bit 5！
+ 1630                     	; --- 【新增檢查點 2】塞入 Bit 6: 讀取 OT_LOCK_FLAG ---
+ 1631  0000C110 A6 4D       	    LDX OT_LOCK_FLAG
+ 1632  0000C112 F0 02       	    BEQ PACK_CHECK_VDD_LOCK     ; <--- 【修正】若未過溫，跳去檢查過壓鎖定！
+ 1633  0000C114 09 40       	    ORA #40h                    ; 若處於過溫鎖定狀態，Bit 6 設為 1！
+ 1634                     	
+ 1635  0000C116             	PACK_CHECK_VDD_LOCK:
+ 1636                     	    ; --- 【新增檢查點 3】塞入 Bit 4: 讀取 VDD_LOCK_FLAG (>4.2V 過壓鎖定) ---
+ 1637  0000C116 A6 50       	    LDX VDD_LOCK_FLAG
+ 1638  0000C118 F0 02       	    BEQ PACK_NTC_DONE
+ 1639  0000C11A 09 10       	    ORA #10h                    ; 若處於 >4.2V 過壓鎖定狀態，Bit 4 設為 1！
+ 1640                     	
+ 1641  0000C11C             	PACK_NTC_DONE:
+  Tue Nov 10 15:48:54 2026                                                                                               Page   30
+
+
+
+
+ 1642  0000C11C 85 1A       	    STA RX_BUF+15
+ 1643  0000C11E A5 36       	    LDA ADC_RAW_L
+ 1644  0000C120 85 1B       	    STA RX_BUF+16
+ 1645                     	
+ 1646  0000C122 A9 11       	    LDA #11h                    ; 回傳總長 = 17 (11h) bytes
+ 1647  0000C124 85 07       	    STA SAVE_LEN                
+ 1648  0000C126 60          	    RTS
+ 1649                     	; =====================================================
+ 1650                     	; 6502 萬年曆每秒更新副程式 (對應 MAIN.c 邏輯，含閏年判斷)
+ 1651                     	; =====================================================
+ 1652  0000C127             	UPDATE_CALENDAR:
+ 1653  0000C127 D8          	    CLD
+ 1654                     	    ; 1. 秒進位 (0 ~ 59)
+ 1655  0000C128 E6 32       	    INC CAL_SEC
+ 1656  0000C12A A5 32       	    LDA CAL_SEC
+ 1657  0000C12C C9 3C       	    CMP #60
+ 1658  0000C12E 90 50       	    BCC CAL_END                 ; 若 < 60 秒，直接結束！
+ 1659  0000C130 A9 00       	    LDA #00h
+ 1660  0000C132 85 32       	    STA CAL_SEC                 ; 秒歸零
+ 1661                     	
+ 1662                     	    ; 2. 分進位 (0 ~ 59)
+ 1663  0000C134 E6 31       	    INC CAL_MIN
+ 1664  0000C136 A5 31       	    LDA CAL_MIN
+ 1665  0000C138 C9 3C       	    CMP #60
+ 1666  0000C13A 90 44       	    BCC CAL_END                 ; 若 < 60 分，直接結束！
+ 1667  0000C13C A9 00       	    LDA #00h
+ 1668  0000C13E 85 31       	    STA CAL_MIN                 ; 分歸零
+ 1669                     	
+ 1670                     	    ; 3. 時進位 (0 ~ 23)
+ 1671  0000C140 E6 30       	    INC CAL_HOUR
+ 1672  0000C142 A5 30       	    LDA CAL_HOUR
+ 1673  0000C144 C9 18       	    CMP #24
+ 1674  0000C146 90 38       	    BCC CAL_END                 ; 若 < 24 時，直接結束！
+ 1675  0000C148 A9 00       	    LDA #00h
+ 1676  0000C14A 85 30       	    STA CAL_HOUR                ; 時歸零
+ 1677                     	
+ 1678                     	    ; 4. 星期進位 (0=週日 ~ 6=週六)
+ 1679  0000C14C E6 33       	    INC CAL_WEEK
+ 1680  0000C14E A5 33       	    LDA CAL_WEEK
+ 1681  0000C150 C9 07       	    CMP #07h
+ 1682  0000C152 90 04       	    BCC CHECK_DAY_CARRY
+ 1683  0000C154 A9 00       	    LDA #00h
+ 1684  0000C156 85 33       	    STA CAL_WEEK
+ 1685                     	
+ 1686                     	    ; 5. 日進位 (需查表判斷當月有幾天，以及是否為閏年 2 月)
+ 1687  0000C158             	CHECK_DAY_CARRY:
+ 1688  0000C158 A6 2E       	    LDX CAL_MONTH               ; 取出當前月份 (1 ~ 12)
+ 1689  0000C15A BD 80 C1    	    LDA MONTH_DAYS_TABLE-1,X   ; 查表取得該月最大天數 (存入 A)
+ 1690  0000C15D             	    
+ 1691  0000C15D E0 02       	    CPX #02h                    ; 檢查現在是不是 2 月 (February)？[cite: 10]
+ 1692  0000C15F D0 03       	    BNE COMPARE_MAX_DAY         ; 不是 2 月就直接比對天數
+ 1693                     	
+ 1694                     	; 是 2 月！呼叫剛剛包好的副程式來決定這年 2 月是 28 還是 29 天
+ 1695  0000C161 20 8D C1    	    JSR CHECK_LEAP_YEAR         ; 執行完後，A 暫存器會自動帶入 #1Ch 或 #1Dh
+ 1696                     	
+ 1697  0000C164             	COMPARE_MAX_DAY:
+ 1698                     	    ; 此時 A 暫存器為當月最大天數 (28/29/30/31)
+  Tue Nov 10 15:48:54 2026                                                                                               Page   31
+
+
+
+
+ 1699  0000C164 E6 2F       	    INC CAL_DAY                 ; 日期 + 1
+ 1700  0000C166 C5 2F       	    CMP CAL_DAY                 ; 比較 (當月最大天數 - 當前日期)
+ 1701  0000C168 B0 16       	    BCS CAL_END                 ; 若 最大天數 >= CAL_DAY，代表還沒月底，結束！
+ 1702                     	
+ 1703                     	    ; 超過當月最大天數，日期歸為 1 號，準備月進位
+ 1704  0000C16A A9 01       	    LDA #01h
+ 1705  0000C16C 85 2F       	    STA CAL_DAY
+ 1706                     	
+ 1707                     	    ; 6. 月進位 (1 ~ 12)
+ 1708  0000C16E E6 2E       	    INC CAL_MONTH
+ 1709  0000C170 A5 2E       	    LDA CAL_MONTH
+ 1710  0000C172 C9 0D       	    CMP #13
+ 1711  0000C174 90 0A       	    BCC CAL_END                 ; 若 < 13 月，結束！
+ 1712  0000C176 A9 01       	    LDA #01h
+ 1713  0000C178 85 2E       	    STA CAL_MONTH               ; 回到 1 月
+ 1714                     	
+ 1715                     	    ; 7. 年進位 (16-bit 加 1)
+ 1716  0000C17A E6 2C       	    INC CAL_YEAR_L
+ 1717  0000C17C D0 02       	    BNE CAL_END
+ 1718  0000C17E E6 2D       	    INC CAL_YEAR_H
+ 1719                     	
+ 1720  0000C180             	CAL_END:
+ 1721  0000C180 60          	    RTS
+ 1722                     	
+ 1723                     	; 1~12 月份天數常數表 (對應 MAIN.c 的 MonthDays[])[cite: 10]
+ 1724  0000C181             	MONTH_DAYS_TABLE:
+ 1725  0000C181 1F 1C 1F 1E 1F 	    .DB 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+              1E 1F 1F 1E 1F 
+              1E 1F 
+ 1726                     	
+ 1727                     	; =====================================================
+ 1728                     	; 萬年曆精準閏年判斷副程式 (支援任意年份，包含 400 年規則)
+ 1729                     	; 輸出：A 暫存器帶入 2 月天數 (#1Dh = 29天，#1Ch = 28天)
+ 1730                     	; =====================================================
+ 1731  0000C18D             	CHECK_LEAP_YEAR:
+ 1732  0000C18D 48          	    PHA
+ 1733  0000C18E 8A          	    TXA
+ 1734  0000C18F 48          	    PHA                         ; 保護 A 與 X 暫存器
+ 1735                     	
+ 1736                     	    ; -------------------------------------------------
+ 1737                     	    ; 規則 1：能被 4 整除的年份通常是閏年[cite: 13]
+ 1738                     	    ; -------------------------------------------------
+ 1739  0000C190 A5 2C       	    LDA CAL_YEAR_L
+ 1740  0000C192 29 03       	    AND #03h                    
+ 1741  0000C194 D0 55       	    BNE NOT_LEAP_YEAR_RET       ; 不能被 4 整除 -> 絕對是平年 (28天)
+ 1742                     	
+ 1743                     	    ; 將年份複製到 TEMP_Y 準備進行 16-bit 減法
+ 1744  0000C196 A5 2C       	    LDA CAL_YEAR_L
+ 1745  0000C198 85 34       	    STA TEMP_Y_L
+ 1746  0000C19A A5 2D       	    LDA CAL_YEAR_H
+ 1747  0000C19C 85 35       	    STA TEMP_Y_H
+ 1748                     	
+ 1749                     	    ; -------------------------------------------------
+ 1750                     	    ; 規則 3：除非同時能被 400 整除，這時又會變成閏年[cite: 13]
+ 1751                     	    ; (連續減去 400，十六進位為 0190h)
+ 1752                     	    ; -------------------------------------------------
+ 1753  0000C19E             	SUB_400_LOOP:
+  Tue Nov 10 15:48:54 2026                                                                                               Page   32
+
+
+
+
+ 1754  0000C19E A5 35       	    LDA TEMP_Y_H
+ 1755  0000C1A0 C9 01       	    CMP #01h
+ 1756  0000C1A2 90 18       	    BCC CHECK_400_REM           ; 高位 < 1 (數值 < 256 < 400)，結束減法
+ 1757  0000C1A4 D0 06       	    BNE DO_SUB_400              ; 高位 > 1 (數值 >= 512 > 400)，繼續減
+ 1758  0000C1A6 A5 34       	    LDA TEMP_Y_L
+ 1759  0000C1A8 C9 90       	    CMP #90h
+ 1760  0000C1AA 90 10       	    BCC CHECK_400_REM           ; 高位 = 1 且 低位 < 90h (數值 < 400)，結束減法
+ 1761                     	
+ 1762  0000C1AC             	DO_SUB_400:
+ 1763  0000C1AC 38          	    SEC
+ 1764  0000C1AD A5 34       	    LDA TEMP_Y_L
+ 1765  0000C1AF E9 90       	    SBC #90h
+ 1766  0000C1B1 85 34       	    STA TEMP_Y_L
+ 1767  0000C1B3 A5 35       	    LDA TEMP_Y_H
+ 1768  0000C1B5 E9 01       	    SBC #01h
+ 1769  0000C1B7 85 35       	    STA TEMP_Y_H
+ 1770  0000C1B9 4C 9E C1    	    JMP SUB_400_LOOP            ; 迴圈直到 TEMP_Y < 400
+ 1771                     	
+ 1772  0000C1BC             	CHECK_400_REM:
+ 1773                     	    ; 檢查減完 400 後餘數是否為 0
+ 1774  0000C1BC A5 35       	    LDA TEMP_Y_H
+ 1775  0000C1BE D0 07       	    BNE SUB_100_LOOP
+ 1776  0000C1C0 A5 34       	    LDA TEMP_Y_L
+ 1777  0000C1C2 D0 03       	    BNE SUB_100_LOOP
+ 1778  0000C1C4 4C E5 C1    	    JMP IS_LEAP_YEAR_RET        ; 餘數為 0，代表能被 400 整除 -> 閏年！
+ 1779                     	
+ 1780                     	    ; -------------------------------------------------
+ 1781                     	    ; 規則 2：如果能被 100 整除，則不是閏年[cite: 13]
+ 1782                     	    ; (此時 TEMP_Y 小於 400，繼續連續減去 100，十六進位為 0064h)
+ 1783                     	    ; -------------------------------------------------
+ 1784  0000C1C7             	SUB_100_LOOP:
+ 1785  0000C1C7 A5 35       	    LDA TEMP_Y_H
+ 1786  0000C1C9 D0 06       	    BNE DO_SUB_100              ; 高位 > 0 (數值 >= 256 > 100)，繼續減
+ 1787  0000C1CB A5 34       	    LDA TEMP_Y_L
+ 1788  0000C1CD C9 64       	    CMP #64h
+ 1789  0000C1CF 90 10       	    BCC CHECK_100_REM           ; 高位 = 0 且 低位 < 64h (數值 < 100)，結束減法
+ 1790                     	
+ 1791  0000C1D1             	DO_SUB_100:
+ 1792  0000C1D1 38          	    SEC
+ 1793  0000C1D2 A5 34       	    LDA TEMP_Y_L
+ 1794  0000C1D4 E9 64       	    SBC #64h
+ 1795  0000C1D6 85 34       	    STA TEMP_Y_L
+ 1796  0000C1D8 A5 35       	    LDA TEMP_Y_H
+ 1797  0000C1DA E9 00       	    SBC #00h
+ 1798  0000C1DC 85 35       	    STA TEMP_Y_H
+ 1799  0000C1DE 4C C7 C1    	    JMP SUB_100_LOOP            ; 迴圈直到 TEMP_Y < 100
+ 1800                     	
+ 1801  0000C1E1             	CHECK_100_REM:
+ 1802                     	    ; 檢查減完 100 後餘數是否為 0 (此時高位必定為 0，只查低位)
+ 1803  0000C1E1 A5 34       	    LDA TEMP_Y_L
+ 1804  0000C1E3 F0 06       	    BEQ NOT_LEAP_YEAR_RET       ; 餘數為 0，能被 100 整除但不能被 400 整除 -> 平年！[cite: 13]
+ 1805                     	
+ 1806                     	    ; -------------------------------------------------
+ 1807                     	    ; 排除所有例外後，剩下能被 4 整除的皆為閏年
+ 1808                     	    ; -------------------------------------------------
+ 1809  0000C1E5             	IS_LEAP_YEAR_RET:
+ 1810  0000C1E5 68          	    PLA
+  Tue Nov 10 15:48:54 2026                                                                                               Page   33
+
+
+
+
+ 1811  0000C1E6 AA          	    TAX
+ 1812  0000C1E7 68          	    PLA
+ 1813  0000C1E8 A9 1D       	    LDA #1Dh                    ; 閏年 2 月有 29 天 (Hex 1Dh)
+ 1814  0000C1EA 60          	    RTS
+ 1815                     	
+ 1816  0000C1EB             	NOT_LEAP_YEAR_RET:
+ 1817  0000C1EB 68          	    PLA
+ 1818  0000C1EC AA          	    TAX
+ 1819  0000C1ED 68          	    PLA
+ 1820  0000C1EE A9 1C       	    LDA #1Ch                    ; 平年 2 月有 28 天 (Hex 1Ch)
+ 1821  0000C1F0 60          	    RTS
+ 1822                     	
+ 1823                     	; =====================================================
+ 1824                     	; 等待接收 1 個 UART Byte (含 Timeout 與餵狗保護)
+ 1825                     	; 輸出：成功時 Carry = 0 (資料在 RX_DATA)
+ 1826                     	;       超時時 Carry = 1
+ 1827                     	; =====================================================
+ 1828  0000C1F1             	WAIT_UART_BYTE:
+ 1829  0000C1F1 A9 FF       	    LDA #0FFh
+ 1830  0000C1F3 85 05       	    STA TIMEOUT_L
+ 1831  0000C1F5 85 06       	    STA TIMEOUT_H   
+ 1832  0000C1F7             	WAIT_BYTE_LOOP:
+ 1833  0000C1F7 20 F8 C2    	    JSR CLEAR_WDT
+ 1834  0000C1FA A5 03       	    LDA RX_READY
+ 1835  0000C1FC D0 0A       	    BNE GOT_BYTE                ; 收到資料了！
+ 1836  0000C1FE             	    
+ 1837  0000C1FE C6 05       	    DEC TIMEOUT_L 
+ 1838  0000C200 D0 F5       	    BNE WAIT_BYTE_LOOP
+ 1839  0000C202 C6 06       	    DEC TIMEOUT_H 
+ 1840  0000C204 D0 F1       	    BNE WAIT_BYTE_LOOP
+ 1841  0000C206             	    
+ 1842  0000C206 38          	    SEC                         ; Timeout 發生！設定 Carry = 1 代表失敗
+ 1843  0000C207 60          	    RTS
+ 1844  0000C208             	GOT_BYTE:
+ 1845  0000C208 A9 00       	    LDA #00h
+ 1846  0000C20A 85 03       	    STA RX_READY                ; 清除接收旗標
+ 1847  0000C20C 18          	    CLC                         ; 清除 Carry = 0 代表成功
+ 1848  0000C20D 60          	    RTS
+ 1849                     	
+ 1850                     	; =====================================================
+ 1851                     	; 使用留存的 RX_TAG 回傳封包給上層
+ 1852                     	; 回傳範例：FF 55 [Len=03] [RX_TAG] [Mode=01] [收到的Data] [Checksum]
+ 1853                     	; =====================================================
+ 1854  0000C20E             	SEND_RESPONSE_WITH_TAG:
+ 1855  0000C20E A9 FF       	    LDA #0FFh
+ 1856  0000C210 20 3F C3    	    JSR UART_SEND_BYTE          ; 1. 送出 FF
+ 1857  0000C213 A9 55       	    LDA #55h
+ 1858  0000C215 20 3F C3    	    JSR UART_SEND_BYTE          ; 2. 送出 55
+ 1859                     	
+ 1860  0000C218 A5 07       	    LDA SAVE_LEN                
+ 1861  0000C21A 85 09       	    STA CHK_SUM                 ; 初始化 Checksum
+ 1862  0000C21C 20 3F C3    	    JSR UART_SEND_BYTE          ; 3. 送出 Length
+ 1863                     	
+ 1864  0000C21F A2 00       	    LDX #00h                    ; 準備迴圈讀取 RX_BUF
+ 1865  0000C221             	SEND_PAYLOAD_LOOP:
+ 1866  0000C221 B5 0B       	    LDA RX_BUF,X               ; 讀取 Payload Data
+ 1867  0000C223 18          	    CLC
+  Tue Nov 10 15:48:54 2026                                                                                               Page   34
+
+
+
+
+ 1868  0000C224 65 09       	    ADC CHK_SUM                 ; 累加 Checksum
+ 1869  0000C226 85 09       	    STA CHK_SUM
+ 1870  0000C228             	    
+ 1871  0000C228 B5 0B       	    LDA RX_BUF,X               ; 再次載入 Data 準備發送
+ 1872  0000C22A 20 3F C3    	    JSR UART_SEND_BYTE          ; 4. 送出 Data
+ 1873                     	
+ 1874  0000C22D E8          	    INX
+ 1875  0000C22E C6 07       	    DEC SAVE_LEN                ; 利用 SAVE_LEN 作為倒數計數器
+ 1876  0000C230 D0 EF       	    BNE SEND_PAYLOAD_LOOP       ; 迴圈直到 Payload 全數送出
+ 1877                     	
+ 1878                     	    ; 5. 送出 Checksum
+ 1879  0000C232 A5 09       	    LDA CHK_SUM
+ 1880  0000C234 49 FF       	    EOR #0FFh                   ; 1 補數
+ 1881  0000C236 18          	    CLC
+ 1882  0000C237 69 01       	    ADC #01h                    ; 變成 2 補數
+ 1883  0000C239 20 3F C3    	    JSR UART_SEND_BYTE
+ 1884  0000C23C 60          	    RTS
+ 1885                     	
+ 1886                     	; =====================================================
+ 1887                     	; 初始化 IO 狀態
+ 1888                     	; =====================================================
+ 1889  0000C23D             	INIT_IO_PORTS:
+ 1890                     	    ; Initial GPIO to PP mode
+ 1891                     	    ; 54h = 0101 0100B -> 將 P1.3, P1.2, P1.1  設為 01 (Push-Pull 推輓輸出) P1.0 設為 00 (AIO)
+ 1892  0000C23D A9 50       	    LDA #50h
+ 1893  0000C23F 8D 04 30    	    STA P1M0
+ 1894                     	    ; FFh = 1111 1111B -> 將 P3.3, P3.2, P3.1, P3.0 皆設為 11 (Quasi-Bidirectional 準雙向模式)
+ 1895  0000C242 A9 FF       	    LDA #FFh 
+ 1896  0000C244 8D 05 30    	    STA P3M0
+ 1897  0000C247 60          	    RTS
+ 1898                     	; =====================================================
+ 1899                     	; 初始化 INT2 狀態
+ 1900                     	; =====================================================
+ 1901  0000C248             	INIT_EXT_INT:
+ 1902                     	    ; 10h = 0001 0000B -> 設置 EI2ES(Bit5:4) 為 01 (負緣觸發)
+ 1903  0000C248 AD 07 30    	    LDA EICR1
+ 1904  0000C24B 29 CF       	    AND #0CFh           ; 清除 Bit 5:4
+ 1905  0000C24D 09 10       	    ORA #10h            ; 設為 01
+ 1906  0000C24F 8D 07 30    	    STA EICR1
+ 1907  0000C252             		
+ 1908                     	    ; 70h = 0100 0000B -> 寫 1 清除 Bit 6 (IE2) 旗標
+ 1909  0000C252 A9 40       	    LDA #40h 
+ 1910  0000C254 85 E1       	    STA IRQ0_STS                ; (IRQ Status 0, 00E1h)
+ 1911  0000C256             	    
+ 1912                     	    ; 70h = 0100 0000B -> 將 Bit 6 (EX2) 設為 1 開啟中斷
+ 1913  0000C256 AD 01 30    		LDA IRQ0_EN
+ 1914  0000C259 09 40       	    ORA #40h 
+ 1915  0000C25B 8D 01 30    	    STA IRQ0_EN                 ; (IRQ Enable 0, 3001h)
+ 1916  0000C25E 60          	    RTS
+ 1917                     	; =====================================================
+ 1918                     	; 初始化 RTC 狀態(設定每 1 秒溢位觸發一次 RTCF 中斷)
+ 1919                     	; =====================================================
+ 1920  0000C25F             	INIT_RTC:
+ 1921                     	    ; 1. 先確定 RTCE = 0 才能寫入 RTC_TM 與 RTC_CS[cite: 1]
+ 1922  0000C25F A9 5A       	    LDA #PWPR_Key
+ 1923  0000C261 8D 0F 30    	    STA PWPR
+ 1924  0000C264 A9 3F       	    LDA #3Fh                    ; RTCE=0, RTCO=0, RTCRL=3Fh (63，每數 1 下就溢位 = 1秒)[cite: 1]
+  Tue Nov 10 15:48:54 2026                                                                                               Page   35
+
+
+
+
+ 1925  0000C266 8D 1A 30    	    STA RTC_CR
+ 1926                     	
+ 1927                     	    ; 2. 設定 Clock Source = ILRCO (RCSS=001), Step = 1秒 (RTCCS=0000)[cite: 1, 9]
+ 1928  0000C269 A9 5A       	    LDA #PWPR_Key
+ 1929  0000C26B 8D 0F 30    	    STA PWPR
+ 1930  0000C26E A9 20       	    LDA #20h                    ; 0010_0000B[cite: 1, 9]
+ 1931  0000C270 8D 1C 30    	    STA RTC_CS
+ 1932                     	
+ 1933                     	    ; 3. 設定當前計數器初值 RTCCT = 3Fh (63)[cite: 1]
+ 1934  0000C273 A9 5A       	    LDA #PWPR_Key
+ 1935  0000C275 8D 0F 30    	    STA PWPR
+ 1936  0000C278 A9 3F       	    LDA #3Fh                    ; RPSC=00, RTCCT=3Fh[cite: 1]
+ 1937  0000C27A 8D 1B 30    	    STA RTC_TM
+ 1938                     	
+ 1939                     	    ; 4. 清除 RTCF 歷史旗標 (IRQ1_STS Bit 1 寫 1 清零)[cite: 1]
+ 1940  0000C27D A9 02       	    LDA #02h
+ 1941  0000C27F 85 E2       	    STA IRQ1_STS
+ 1942                     	
+ 1943                     	    ; 5. 開啟 RTC 中斷 (IRQ1_EN Bit 1: ERTCF = 1，允許從 STOP 模式喚醒)[cite: 1]
+ 1944  0000C281 AD 02 30    	    LDA IRQ1_EN
+ 1945  0000C284 09 02       	    ORA #02h
+ 1946  0000C286 8D 02 30    	    STA IRQ1_EN
+ 1947                     	
+ 1948                     	    ; 6. 啟動 RTC (將 RTC_CR 的 Bit 7 RTCE 設為 1，同時維持 RTCRL=3Fh -> BAh/BFh)[cite: 1]
+ 1949  0000C289 A9 5A       	    LDA #PWPR_Key
+ 1950  0000C28B 8D 0F 30    	    STA PWPR
+ 1951  0000C28E A9 BF       	    LDA #0BFh                   ; 1011_1111B (RTCE=1, RTCO=0, RTCRL=3Fh)[cite: 1]
+ 1952  0000C290 8D 1A 30    	    STA RTC_CR
+ 1953                     	
+ 1954  0000C293 60          	    RTS
+ 1955                     	
+ 1956                     	; =====================================================
+ 1957                     	; 進入休眠準備 (將 P3.0 接收權交給 INT2)
+ 1958                     	; =====================================================
+ 1959  0000C294             	PREPARE_SLEEP:
+ 1960  0000C294 A9 5A       	    LDA #PWPR_Key
+ 1961  0000C296 8D 0F 30    	    STA PWPR
+ 1962  0000C299 A5 4E       	    LDA DEFAULT_OR08
+ 1963  0000C29B 8D 08 31    	    STA OR08
+ 1964                     	
+ 1965                     	    ; --- 檢查是否處於 >4.2V 過壓鎖定狀態，若已降回 <4.2V (BO1O == 1) 則解除鎖定 ---
+ 1966  0000C29E A5 50       	    LDA VDD_LOCK_FLAG
+ 1967  0000C2A0 F0 0B       	    BEQ CHECK_AC0_LOCK_SLEEP
+ 1968                     	
+ 1969  0000C2A2 AD 1E 30    	    LDA PWR_CR1
+ 1970  0000C2A5 29 20       	    AND #20h                    
+ 1971  0000C2A7 F0 04       	    BEQ CHECK_AC0_LOCK_SLEEP    ; 若 BO1O = 0 (仍在 4.2V 以上)，保持鎖定
+ 1972                     	
+ 1973                     	    ; 已降回 4.2V 以下 (BO1O == 1)！解除過壓鎖定
+ 1974  0000C2A9 A9 00       	    LDA #00h
+ 1975  0000C2AB 85 50       	    STA VDD_LOCK_FLAG
+ 1976                     	
+ 1977  0000C2AD             	CHECK_AC0_LOCK_SLEEP:
+ 1978                     	
+ 1979                     	    ; --- 檢查是否處於過溫鎖定狀態，若已降溫 (AC0O == 0) 則重新開啟 AC0 喚醒中斷 ---
+ 1980  0000C2AD A5 4D       	    LDA OT_LOCK_FLAG
+ 1981  0000C2AF F0 17       	    BEQ SLEEP_CFG_UART          
+  Tue Nov 10 15:48:54 2026                                                                                               Page   36
+
+
+
+
+ 1982                     	
+ 1983  0000C2B1 AD 2C 30    	    LDA AC0CR0
+ 1984  0000C2B4 29 20       	    AND #20h                    
+ 1985  0000C2B6 D0 10       	    BNE SLEEP_CFG_UART          
+ 1986                     	
+ 1987  0000C2B8 A9 00       	    LDA #00h
+ 1988  0000C2BA 85 4D       	    STA OT_LOCK_FLAG
+ 1989  0000C2BC A9 30       	    LDA #30h
+ 1990  0000C2BE 85 E2       	    STA IRQ1_STS                
+ 1991  0000C2C0 AD 02 30    	    LDA IRQ1_EN
+ 1992  0000C2C3 09 20       	    ORA #20h                    
+ 1993  0000C2C5 8D 02 30    	    STA IRQ1_EN
+ 1994                     	
+ 1995  0000C2C8             	SLEEP_CFG_UART:
+ 1996  0000C2C8 AD 01 30    	    LDA IRQ0_EN
+ 1997  0000C2CB 29 FE       	    AND #0FEh           
+ 1998  0000C2CD 8D 01 30    	    STA IRQ0_EN
+ 1999  0000C2D0             		
+ 2000  0000C2D0 A9 40       	    LDA #40h            
+ 2001  0000C2D2 8D 30 30    	    STA S1CON
+ 2002  0000C2D5 20 48 C2    		JSR INIT_EXT_INT
+ 2003                     	
+ 2004  0000C2D8 A9 5A       		LDA #PWPR_Key
+ 2005  0000C2DA 8D 0F 30    		STA PWPR
+ 2006  0000C2DD A9 02       		LDA #02h
+ 2007  0000C2DF 8D 10 30    		STA PWR_CTL
+ 2008  0000C2E2 60          		RTS
+ 2009                     	; =====================================================
+ 2010                     	; 初始化 WDT 狀態
+ 2011                     	; =====================================================
+ 2012  0000C2E3             	INIT_WDT:
+ 2013                     		; 初始化 WDT
+ 2014                     	    ; WDT_CR0 = 0x8E (WREN=1, NSW=0 休眠暫停, WPS=110 1s)
+ 2015  0000C2E3 A9 5A       		LDA #PWPR_Key
+ 2016  0000C2E5 8D 0F 30    		STA PWPR
+ 2017  0000C2E8 A9 8E       	    LDA #8Eh               
+ 2018  0000C2EA 8D 18 30    	    STA WDT_CR0
+ 2019                     	    ; WDT_CR1 = 0xC0 (CLRW=1 餵狗, ENW=1 啟動)
+ 2020  0000C2ED A9 5A       		LDA #PWPR_Key
+ 2021  0000C2EF 8D 0F 30    		STA PWPR
+ 2022  0000C2F2 A9 C0       		LDA #C0h               
+ 2023  0000C2F4 8D 19 30    	    STA WDT_CR1
+ 2024  0000C2F7 60          		RTS
+ 2025                     	; =====================================================
+ 2026                     	; 餵狗 (Clear WDT) 副程式
+ 2027                     	; 說明：解除 SFR 寫入保護，並清除 WDT 計數器以避免系統重置
+ 2028                     	; =====================================================
+ 2029  0000C2F8             	CLEAR_WDT:
+ 2030  0000C2F8 A9 5A       	    LDA #PWPR_Key           ; 載入 5Ah 密碼以解除寫保護機制
+ 2031  0000C2FA 8D 0F 30    	    STA PWPR                ; 寫入 PWPR 暫存器
+ 2032  0000C2FD             	    
+ 2033  0000C2FD A9 C0       	    LDA #C0h                ; Bit 7 (CLRW) = 1 清除計數器, Bit 6 (ENW) = 1 保持啟動
+ 2034  0000C2FF 8D 19 30    	    STA WDT_CR1             ; 寫入看門狗控制暫存器 1
+ 2035  0000C302             	    
+ 2036  0000C302 60          	    RTS                     ; 返回呼叫點
+ 2037                     	; =====================================================
+ 2038                     	; 初始化 ILRCO再stop mode狀態
+  Tue Nov 10 15:48:54 2026                                                                                               Page   37
+
+
+
+
+ 2039                     	; =====================================================
+ 2040  0000C303             	INIT_ILRCO_in_stop_mode:
+ 2041                     	    ;CK_CTL = 0x80 (ILPDX= 1 ILRCO control in PD mode)
+ 2042  0000C303 A9 5A       		LDA #PWPR_Key           ; 載入 5Ah 密碼以解除寫保護機制
+ 2043  0000C305 8D 0F 30    	    STA PWPR
+ 2044  0000C308 AD 11 30    		LDA CK_CTL
+ 2045  0000C30B 09 80       		ORA #80h
+ 2046  0000C30D 8D 11 30    		STA CK_CTL
+ 2047  0000C310 60          		RTS
+ 2048                     	; =====================================================
+ 2049                     	; UART 副程式區 Baud rate =9600
+ 2050                     	; =====================================================
+ 2051  0000C311             	INIT_UART:
+ 2052  0000C311 AD 11 30    	    LDA CK_CTL
+ 2053  0000C314 09 01       	    ORA #01h                    ; Bit 0 (IHEN) = 1，開啟內部高頻振盪器 (IHRCO)
+ 2054  0000C316 8D 11 30    	    STA CK_CTL
+ 2055  0000C319 AD 10 30    	    LDA PWR_CTL
+ 2056  0000C31C 29 F3       	    AND #0F3h                   ; 清除 Bit 3 (OSCS1) 與 Bit 2 (OSCS0)，確保時脈源設定正確
+ 2057  0000C31E 8D 10 30    	    STA PWR_CTL
+ 2058  0000C321 AD 12 30    	    LDA MCK_CTL
+ 2059  0000C324 09 04       	    ORA #04h                    ; Bit 2 (URCE) = 1，啟用 UART 模組時脈
+ 2060  0000C326 8D 12 30    	    STA MCK_CTL
+ 2061  0000C329 A9 FD       	    LDA #0FDh                   ; S1BRT 設定：寫入鮑率計時器重載值 (依系統時脈對應 9600 bps)
+ 2062  0000C32B 8D 32 30    	    STA S1BRT
+ 2063                     	    ; 50h = 0101 0000B -> Bit 6 (SM11) = 1 啟用 8-bit UART，Bit 4 (REN1) = 1 允許接收
+ 2064  0000C32E A9 50       	    LDA #50h                    ; S1CON 設定 
+ 2065  0000C330 8D 30 30    	    STA S1CON
+ 2066                     	    ; 38h = 0011 1000B -> 設置 S1MOD3, S1DOR, S1TR (鮑率時脈產生器相關配置)
+ 2067  0000C333 A9 38       	    LDA #38h                    ; S1CFG 設定
+ 2068  0000C335 8D 34 30    	    STA S1CFG
+ 2069                     	    ; 等待 TXD 空閒
+ 2070  0000C338 A2 00       	    LDX #00h
+ 2071  0000C33A             	WAIT_TXD_IDLE:
+ 2072  0000C33A EA          	    NOP
+ 2073  0000C33B CA          	    DEX
+ 2074  0000C33C D0 FC       	    BNE WAIT_TXD_IDLE
+ 2075  0000C33E 60          	    RTS
+ 2076  0000C33F             	UART_SEND_BYTE:
+ 2077  0000C33F 8D 31 30    	    STA S1BUF                   ; 將 A 暫存器內容寫入 UART 緩衝區 (S1BUF, 3031h) 開始傳送
+ 2078  0000C342             	WAIT_TI1:
+ 2079  0000C342 AD 30 30    	    LDA S1CON
+ 2080  0000C345 29 02       	    AND #02h                    ; 等待傳送完成 (檢查 TI1 flag, Bit 1)
+ 2081  0000C347 F0 F9       	    BEQ WAIT_TI1                
+ 2082  0000C349 AD 30 30    	    LDA S1CON
+ 2083  0000C34C 29 FC       	    AND #0FCh                   
+ 2084  0000C34E 09 02       	    ORA #02h                    ; 寫入 1 至 Bit 1 來清除 TI1 旗標 (Megawin 特殊清旗標機制)
+ 2085  0000C350 8D 30 30    	    STA S1CON
+ 2086  0000C353 60          	    RTS
+ 2087                     	; =====================================================
+ 2088                     	; [更新] 印出重置旗標副程式 (Hex 轉 ASCII)
+ 2089                     	; =====================================================
+ 2090  0000C354             	PRINT_RST_FLAG:
+ 2091                     	    ; --- 印出 "RST0=" ---
+ 2092  0000C354 A9 52       	    LDA #52h ; 'R'
+ 2093  0000C356 20 3F C3    	    JSR UART_SEND_BYTE
+ 2094  0000C359 A9 53       	    LDA #53h ; 'S'
+ 2095  0000C35B 20 3F C3    	    JSR UART_SEND_BYTE
+  Tue Nov 10 15:48:54 2026                                                                                               Page   38
+
+
+
+
+ 2096  0000C35E A9 54       	    LDA #54h ; 'T'
+ 2097  0000C360 20 3F C3    	    JSR UART_SEND_BYTE
+ 2098  0000C363 A9 30       	    LDA #30h ; '0'
+ 2099  0000C365 20 3F C3    	    JSR UART_SEND_BYTE
+ 2100  0000C368 A9 3D       	    LDA #3Dh ; '='
+ 2101  0000C36A 20 3F C3    	    JSR UART_SEND_BYTE
+ 2102                     	
+ 2103                     	    ; 轉換並印出 RAM00 (RST_SRF0)
+ 2104  0000C36D A5 00       	    LDA RAM00
+ 2105  0000C36F 4A          	    LSR A
+ 2106  0000C370 4A          	    LSR A
+ 2107  0000C371 4A          	    LSR A
+ 2108  0000C372 4A          	    LSR A
+ 2109  0000C373 20 C7 C3    	    JSR NIBBLE_TO_ASCII
+ 2110  0000C376 20 3F C3    	    JSR UART_SEND_BYTE
+ 2111  0000C379 A5 00       	    LDA RAM00
+ 2112  0000C37B 29 0F       	    AND #0Fh
+ 2113  0000C37D 20 C7 C3    	    JSR NIBBLE_TO_ASCII
+ 2114  0000C380 20 3F C3    	    JSR UART_SEND_BYTE
+ 2115                     	
+ 2116                     	    ; --- 印出 ", RST1=" ---
+ 2117  0000C383 A9 2C       	    LDA #2Ch ; ','
+ 2118  0000C385 20 3F C3    	    JSR UART_SEND_BYTE
+ 2119  0000C388 A9 20       	    LDA #20h ; ' '
+ 2120  0000C38A 20 3F C3    	    JSR UART_SEND_BYTE
+ 2121  0000C38D A9 52       	    LDA #52h ; 'R'
+ 2122  0000C38F 20 3F C3    	    JSR UART_SEND_BYTE
+ 2123  0000C392 A9 53       	    LDA #53h ; 'S'
+ 2124  0000C394 20 3F C3    	    JSR UART_SEND_BYTE
+ 2125  0000C397 A9 54       	    LDA #54h ; 'T'
+ 2126  0000C399 20 3F C3    	    JSR UART_SEND_BYTE
+ 2127  0000C39C A9 31       	    LDA #31h ; '1'
+ 2128  0000C39E 20 3F C3    	    JSR UART_SEND_BYTE
+ 2129  0000C3A1 A9 3D       	    LDA #3Dh ; '='
+ 2130  0000C3A3 20 3F C3    	    JSR UART_SEND_BYTE
+ 2131                     	
+ 2132                     	    ; 轉換並印出 RAM01 (RST_SRF1)
+ 2133  0000C3A6 A5 01       	    LDA RAM01
+ 2134  0000C3A8 4A          	    LSR A
+ 2135  0000C3A9 4A          	    LSR A
+ 2136  0000C3AA 4A          	    LSR A
+ 2137  0000C3AB 4A          	    LSR A
+ 2138  0000C3AC 20 C7 C3    	    JSR NIBBLE_TO_ASCII
+ 2139  0000C3AF 20 3F C3    	    JSR UART_SEND_BYTE
+ 2140  0000C3B2 A5 01       	    LDA RAM01
+ 2141  0000C3B4 29 0F       	    AND #0Fh
+ 2142  0000C3B6 20 C7 C3    	    JSR NIBBLE_TO_ASCII
+ 2143  0000C3B9 20 3F C3    	    JSR UART_SEND_BYTE
+ 2144                     	
+ 2145                     	    ; --- 印出換行 \r\n ---
+ 2146  0000C3BC A9 0D       	    LDA #0Dh
+ 2147  0000C3BE 20 3F C3    	    JSR UART_SEND_BYTE
+ 2148  0000C3C1 A9 0A       	    LDA #0Ah
+ 2149  0000C3C3 20 3F C3    	    JSR UART_SEND_BYTE
+ 2150  0000C3C6 60          	    RTS
+ 2151                     	
+ 2152                     	; 將 0x0~0xF 轉換為 ASCII ('0'~'9', 'A'~'F')
+  Tue Nov 10 15:48:54 2026                                                                                               Page   39
+
+
+
+
+ 2153  0000C3C7             	NIBBLE_TO_ASCII:
+ 2154  0000C3C7 C9 0A       	    CMP #0Ah
+ 2155  0000C3C9 90 02       	    BCC ADD_30
+ 2156  0000C3CB 69 06       	    ADC #06h
+ 2157  0000C3CD             	ADD_30:
+ 2158  0000C3CD 69 30       	    ADC #30h
+ 2159  0000C3CF 60          	    RTS
+ 2160                     	;=============================================
+ 2161                     	; INTERRUPT SERVICE ROUTINE 
+ 2162                     	;=============================================
+ 2163  0000C3D0             	irq_isr:
+ 2164  0000C3D0 48          	    PHA
+ 2165                     	
+ 2166                     	    ; ---------------------------------------------------
+ 2167                     	    ; 1. 檢查 UART1 接收 (RI1i)
+ 2168                     	    ; ---------------------------------------------------
+ 2169  0000C3D1             	CHECK_UART_RX:
+ 2170  0000C3D1 A5 E1       	    LDA IRQ0_STS
+ 2171  0000C3D3 29 01       	    AND #01h             ; 檢查 Bit 0: RI1i
+ 2172  0000C3D5 F0 13       	    BEQ CHECK_INT2       
+ 2173                     	
+ 2174                     	    ; --- 執行真正資料的接收 ---
+ 2175  0000C3D7 AD 30 30    	    LDA S1CON
+ 2176  0000C3DA 29 FC       	    AND #0FCh            
+ 2177  0000C3DC 09 01       	    ORA #01h
+ 2178  0000C3DE 8D 30 30    	    STA S1CON            ; 寫 1 清除 RI1 旗標
+ 2179  0000C3E1             	    
+ 2180  0000C3E1 AD 31 30    	    LDA S1BUF            ; 讀取 UART 資料
+ 2181  0000C3E4 85 04       	    STA RX_DATA          ; 存入變數
+ 2182  0000C3E6             	    
+ 2183  0000C3E6 A9 01       	    LDA #01h
+ 2184  0000C3E8 85 03       	    STA RX_READY         ; 標記「資料已備妥」，通知主迴圈
+ 2185                     	
+ 2186                     	    ; ---------------------------------------------------
+ 2187                     	    ; 2. 檢查 INT2 (P3.0) 喚醒
+ 2188                     	    ; ---------------------------------------------------
+ 2189  0000C3EA             	CHECK_INT2:
+ 2190  0000C3EA A5 E1       	    LDA IRQ0_STS
+ 2191  0000C3EC 29 40       	    AND #40h             ; 檢查 Bit 6: IE2
+ 2192  0000C3EE F0 2B       	    BEQ CHECK_RTC      
+ 2193                     	
+ 2194                     	    ; --- 執行 INT2 喚醒處理 ---
+ 2195  0000C3F0 A9 40       	    LDA #40h             
+ 2196  0000C3F2 85 E1       	    STA IRQ0_STS         ; 清除 IE2 旗標
+ 2197                     	
+ 2198  0000C3F4 AD 01 30    	    LDA IRQ0_EN
+ 2199  0000C3F7 29 BF       	    AND #0BFh            
+ 2200  0000C3F9 8D 01 30    	    STA IRQ0_EN          ; 關閉 INT2 中斷 (EX2=0)
+ 2201  0000C3FC             	WAIT_RX_HIGH:
+ 2202  0000C3FC A5 E5       	    LDA P3_PIN           ; 讀取 Port 3 腳位狀態 (00E5h)
+ 2203  0000C3FE 29 01       	    AND #01h             ; 檢查 P3.0 (RXD1)
+ 2204  0000C400 F0 FA       	    BEQ WAIT_RX_HIGH     ; 如果還是 Low，代表 Dummy Byte 還沒傳完，原地等它變 High
+ 2205                     	
+ 2206                     	    ; P3.0 已經回到 Stop Bit (High)，現在開啟 REN1 絕對不會錯位
+ 2207  0000C402 A9 50       	    LDA #50h             ; SM11=1, REN1=1 (重新開啟 UART 接收引擎)
+ 2208  0000C404 8D 30 30    	    STA S1CON            
+ 2209                     	
+  Tue Nov 10 15:48:54 2026                                                                                               Page   40
+
+
+
+
+ 2210  0000C407 AD 30 30    	    LDA S1CON
+ 2211  0000C40A 09 01       	    ORA #01h             
+ 2212  0000C40C 8D 30 30    	    STA S1CON            ; 清除 RI1 旗標 (丟棄 Dummy 造成的亂碼)
+ 2213                     	
+ 2214  0000C40F AD 01 30    	    LDA IRQ0_EN
+ 2215  0000C412 09 01       	    ORA #01h             
+ 2216  0000C414 8D 01 30    	    STA IRQ0_EN          ; 開啟 UART 接收中斷 (ERI1=1)
+ 2217                     	
+ 2218  0000C417 A9 01       	    LDA #01h
+ 2219  0000C419 85 02       	    STA WAKEUP_FLAG      ; 標記「MCU 已喚醒」，通知主迴圈別再睡了
+ 2220                     	
+ 2221                     	    ; ---------------------------------------------------
+ 2222                     	    ; 3. 檢查 RTC 1 秒中斷 (Bit 1: RTCF)
+ 2223                     	    ; ---------------------------------------------------
+ 2224  0000C41B             	CHECK_RTC:
+ 2225  0000C41B A5 E2       	    LDA IRQ1_STS         ; 讀取 00E2h
+ 2226  0000C41D 29 02       	    AND #02h             ; 檢查 Bit 1: RTCF
+ 2227  0000C41F F0 06       	    BEQ CHECK_BOD1
+ 2228                     	
+ 2229  0000C421 A9 02       	    LDA #02h
+ 2230  0000C423 85 E2       	    STA IRQ1_STS         ; 寫 1 清除 RTCF 旗標
+ 2231                     	
+ 2232  0000C425 E6 2B       	    INC RTC_TICK         ; 標記「過了 1 秒」，交給主迴圈去算萬年曆！
+ 2233                     	; ---------------------------------------------------
+ 2234                     	    ; 4. 檢查 BOD1 過高壓狀態 (VDD > 4.2V 時 PWR_CR1 Bit 5 BO1O 為 0)
+ 2235                     	    ; ---------------------------------------------------
+ 2236  0000C427             	CHECK_BOD1:
+ 2237                     	    ; 若已經在過壓鎖定狀態 (VDD_LOCK_FLAG != 0)，直接跳過不重複觸發
+ 2238  0000C427 A5 50       	    LDA VDD_LOCK_FLAG
+ 2239  0000C429 D0 0D       	    BNE CHECK_AC0
+ 2240                     	
+ 2241                     	    ; 直接檢查 PWR_CR1 的 Bit 5 (BO1O)：
+ 2242                     	    ; 3.3V 時為 1 (2Bh)，超過 4.2V 時變為 0 (0Bh)！
+ 2243  0000C42B AD 1E 30    	    LDA PWR_CR1
+ 2244  0000C42E 29 20       	    AND #20h
+ 2245  0000C430 D0 06       	    BNE CHECK_AC0               ; 若 Bit 5 != 0 (代表 VDD < 4.2V 正常)，直接跳去 CHECK_AC0！
+ 2246                     	
+ 2247                     	    ; 確認真的超過 4.2V (BO1O == 0)！
+ 2248  0000C432 A9 01       	    LDA #01h
+ 2249  0000C434 85 4F       	    STA BOD1_WAKE_FLAG          ; 通知 main_loop 立即主動發送過壓告警封包 (Tag=DDh, Cmd=02h)
+ 2250  0000C436 85 50       	    STA VDD_LOCK_FLAG           ; 進入過壓鎖定狀態 (對應封包 RX_BUF+15 的 Bit 4 檢查點會變 1)
+ 2251  0000C438             		
+ 2252                     	; ---------------------------------------------------
+ 2253                     	    ; 5. 檢查 AC0 過溫中斷 (Bit 5: AC0RF)
+ 2254                     	    ; ---------------------------------------------------
+ 2255  0000C438             	CHECK_AC0:
+ 2256                     	    ; 若目前已經處於過溫鎖定狀態 (OT_LOCK_FLAG != 0)，
+ 2257                     	    ; 代表這次是 RTC 或 UART 進來的中斷，直接跳過不處理 AC0！
+ 2258  0000C438 A5 4D       	    LDA OT_LOCK_FLAG
+ 2259  0000C43A D0 1F       	    BNE irq_isr_end
+ 2260                     	
+ 2261  0000C43C A5 E2       	    LDA IRQ1_STS
+ 2262  0000C43E 29 20       	    AND #20h                    ; 檢查 Bit 5: AC0RF
+ 2263  0000C440 F0 19       	    BEQ irq_isr_end
+ 2264                     	
+ 2265                     	    ; 先寫 1 清除 AC0RF / AC0FF 旗標
+ 2266  0000C442 A9 30       	    LDA #30h
+  Tue Nov 10 15:48:54 2026                                                                                               Page   41
+
+
+
+
+ 2267  0000C444 85 E2       	    STA IRQ1_STS
+ 2268                     	
+ 2269                     	    ; 確認 AC0CR0 的 Bit 5 (AC0O) 現在真的處於 1 (過溫狀態)
+ 2270  0000C446 AD 2C 30    	    LDA AC0CR0
+ 2271  0000C449 29 20       	    AND #20h                    ; 檢查 AC0O 是否為 1
+ 2272  0000C44B F0 0E       	    BEQ irq_isr_end             ; 若 AC0O 是 0，直接忽略
+ 2273                     	
+ 2274                     	    ; 確認真的過溫 (AC0O == 1)！關閉 EAC0R 中斷致能
+ 2275  0000C44D AD 02 30    	    LDA IRQ1_EN
+ 2276  0000C450 29 DF       	    AND #0DFh                   ; 清除 Bit 5: EAC0R
+ 2277  0000C452 8D 02 30    	    STA IRQ1_EN
+ 2278                     	
+ 2279  0000C455 A9 01       	    LDA #01h
+ 2280  0000C457 85 4C       	    STA AC0_WAKE_FLAG           ; 通知 main_loop 立即主動取樣並發送 UART
+ 2281  0000C459 85 4D       	    STA OT_LOCK_FLAG            ; 標記進入過溫鎖定狀態，待降溫後再重開中斷
+ 2282                     	
+ 2283  0000C45B             	irq_isr_end:
+ 2284  0000C45B 68          	    PLA
+ 2285  0000C45C 40          	    RTI
+ 2286                     	
+ 2287                     	;=============================================
+ 2288                     	; INTERRUPT VECTOR SECTION ;()
+ 2289                     	;=============================================
+ 2290  0000FFFC             	    .org FFFCH
+ 2291  0000FFFC             	VECTOR:
+ 2292                     	
+ 2293  0000FFFC 00          	    .DB .LOW.reset      ;reset
+ 2294  0000FFFD BC          	    .DB .HIGH.reset     ;reset
+ 2295  0000FFFE D0          	    .DB .LOW.irq_isr    ;IRQ interrupt vector
+ 2296  0000FFFF C3          	    .DB .HIGH.irq_isr   ;IRQ interrupt vector
+ 2297                     	
+ 2298                     	
+
+
+             Lines Assembled : 2298                  Errors : 0
+
+
+

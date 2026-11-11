@@ -1,0 +1,943 @@
+  Wed Nov 04 11:24:29 2026                                                                                               Page    1
+
+
+
+
+
+
+
+               2500 A.D. 6502 Macro Assembler  -  Version 5.02b
+               ------------------------------------------------
+
+                       Input  Filename : D:\YuZhu\06_Project\FA277\BatteryID\BatteryID_v02\MW000.asb
+                       Output Filename : D:\YuZhu\06_Project\FA277\BatteryID\BatteryID_v02\MW000.OBJ
+                       Listing Has Been Relocated                               
+
+
+    1                     	; ==============================================================================
+    2                     	; FA277 Battery ID  
+    3                     	; ==============================================================================
+    4  00000000             	 
+    5                     	
+    6                     	
+    7                     	
+    8                     	
+    9                     	
+   10  00000000             	    .include pgm_head_MSE01PC1A.h
+   11  00000000             			.CHIP      R65C02
+   12                     			.LINKLIST
+   13                     			.SYMBOLS
+   14                     			.LIST ON
+   15                     			.debug     asm
+   16                     	
+   17                     	
+   18                     	;--------------------------
+   19         0001        	bit0	.EQU	1B
+   20         0002        	bit1	.EQU	10B
+   21         0004        	bit2	.EQU	100B
+   22         0008        	bit3	.EQU	1000B
+   23         0010        	bit4	.EQU	10000B
+   24         0020        	bit5	.EQU	100000B
+   25         0040        	bit6	.EQU	1000000B
+   26         0080        	bit7	.EQU	10000000B
+   27                     	;--------------------------
+   28                     	;=========================================================================
+   29                     	
+   30                     	;=========================================================================
+   31                     	; INTERRUPT CONTROL
+   32                     	;=========================================================================
+   33                     	; --- IRQ 0 ($3001 / $00E1) ---
+   34         3001        	IRQ0_EN     EQU $3001   ; IRQ Enable 0
+   35         0080        	EBOF0       EQU $80     
+   36         0040        	EX2         EQU $40     
+   37         0020        	EX1         EQU $20     
+   38         0010        	EX0         EQU $10     
+   39         0008        	ETF1PWMX    EQU $08     
+   40         0004        	ETF0        EQU $04     
+   41         0002        	ETI1        EQU $02     
+   42         0001        	ERI1        EQU $01     
+   43                     	
+   44         00E1        	IRQ0_STS    EQU $00E1   ; IRQ Status 0
+   45         0080        	BOF0        EQU $80     
+   46         0040        	IE2         EQU $40     
+  Wed Nov 04 11:24:29 2026                                                                                               Page    2
+
+
+
+
+   47         0020        	IE1         EQU $20     
+   48         0010        	IE0         EQU $10     
+   49         0008        	TF1         EQU $08     
+   50         0004        	TF0         EQU $04     
+   51         0002        	TI1I        EQU $02     
+   52         0001        	RI1I        EQU $01     
+   53                     	
+   54                     	; --- IRQ 1 ($3002 / $00E2) ---
+   55         3002        	IRQ1_EN     EQU $3002   ; IRQ Enable 1
+   56         0080        	EAC1REBO1R  EQU $80     
+   57         0040        	EAC1FEBO1F  EQU $40     
+   58         0020        	EAC0R       EQU $20     
+   59         0010        	EAC0F       EQU $10     
+   60         0008        	EADCI       EQU $08     
+   61         0004        	EMCDF       EQU $04     
+   62         0002        	ERTCF       EQU $02     
+   63         0001        	EWDTF       EQU $01     
+   64                     	
+   65         00E2        	IRQ1_STS    EQU $00E2   ; IRQ Status 1
+   66         0080        	AC1RFBO1RF  EQU $80     
+   67         0040        	AC1FFBO1FF  EQU $40     
+   68         0020        	AC0RF       EQU $20     
+   69         0010        	AC0FF       EQU $10     
+   70         0008        	ADCI        EQU $08     
+   71         0004        	MCDF        EQU $04     
+   72         0002        	RTCF        EQU $02     
+   73         0001        	WDTF        EQU $01     
+   74                     	
+   75                     	; --- IRQ 2 ($3003 / $00E3) ---
+   76         3003        	IRQ2_EN     EQU $3003   ; IRQ Enable 2
+   77         0008        	ERFW        EQU $08     
+   78         0001        	ERFI        EQU $01     
+   79                     	
+   80         00E3        	IRQ2_STS    EQU $00E3   ; IRQ Status 2
+   81         0080        	RFACT       EQU $80     
+   82         0040        	RFCYC       EQU $40     
+   83         0008        	RFWKP       EQU $08     
+   84         0004        	RFACK       EQU $04     
+   85         0002        	UCAC        EQU $02     
+   86         0001        	RFINT       EQU $01     
+   87                     	
+   88                     	;=========================================================================
+   89                     	; I/O PORTS
+   90                     	;=========================================================================
+   91                     	; --- Port 1 ---
+   92         00E4        	P1_PIN      EQU $00E4   ; Port 1 Input
+   93         00E4        	P1_DAT      EQU $00E4   ; Port 1 Output
+   94         00E4        	P1					EQU $00E4   ; Port 1 Output
+   95         3004        	P1M0        EQU $3004   ; Port 1 Mode Control
+   96         0080        	P13M1       EQU $80     
+   97         0040        	P13M0       EQU $40     
+   98         0020        	P12M1       EQU $20     
+   99         0010        	P12M0       EQU $10     
+  100         0008        	P11M1       EQU $08     
+  101         0004        	P11M0       EQU $04     
+  102         0002        	P10M1       EQU $02     
+  103         0001        	P10M0       EQU $01     
+  Wed Nov 04 11:24:29 2026                                                                                               Page    3
+
+
+
+
+  104                     	
+  105                     	; --- Port 3 ---
+  106         00E5        	P3_PIN      EQU $00E5   ; Port 3 Input
+  107         00E5        	P3_DAT      EQU $00E5   ; Port 3 Output
+  108         00E5        	P3					EQU $00E5   ; Port 3 Output 
+  109         3005        	P3M0        EQU $3005   ; Port 3 Mode Control
+  110         0080        	P33M1       EQU $80     
+  111         0040        	P33M0       EQU $40     
+  112         0020        	P32M1       EQU $20     
+  113         0010        	P32M0       EQU $10     
+  114         0008        	P31M1       EQU $08     
+  115         0004        	P31M0       EQU $04     
+  116         0002        	P30M1       EQU $02     
+  117         0001        	P30M0       EQU $01     
+  118                     	
+  119                     	;=========================================================================
+  120                     	; EXTERNAL INTERRUPT CONTROL
+  121                     	;=========================================================================
+  122         3006        	EICR0       EQU $3006   ; External INT Control 0
+  123         0040        	INT2ET      EQU $40     
+  124         0020        	INT1ET      EQU $20     
+  125         0010        	INT0ET      EQU $10     
+  126         0004        	INT2H       EQU $04     
+  127         0002        	INT1H       EQU $02     
+  128         0001        	INT0H       EQU $01     
+  129                     	
+  130         3007        	EICR1       EQU $3007   ; External INT Control 1
+  131         0020        	EI2ES1      EQU $20     
+  132         0010        	EI2ES0      EQU $10     
+  133         0008        	EI1ES1      EQU $08     
+  134         0004        	EI1ES0      EQU $04     
+  135         0002        	EI0ES1      EQU $02     
+  136         0001        	EI0ES0      EQU $01     
+  137                     	
+  138                     	;=========================================================================
+  139                     	; TIMERS & PWM
+  140                     	;=========================================================================
+  141                     	; --- Timer 0 ---
+  142         00E6        	T0CNT       EQU $00E6   ; Timer 0 Counter
+  143                     	
+  144                     	
+  145         00E7        	T0CTL       EQU $00E7   ; Timer 0 Control
+  146         0080        	ENT0        EQU $80     
+  147         0040        	T0RL        EQU $40      (Renamed to avoid conflict with Reg T0RL)
+  148         0004        	T0K2        EQU $04     
+  149         0002        	T0K1        EQU $02     
+  150         0001        	T0K0        EQU $01     
+  151                     	
+  152                     	; --- Timer 1 ---
+  153         00E8        	T1CNT       EQU $00E8   ; Timer 1 Counter
+  154         00E8        	T1RL        EQU $00E8   ; Timer 1 Reload (Register)
+  155                     	
+  156         00E9        	T1CTL       EQU $00E9   ; Timer 1 Control
+  157         0080        	ENT1        EQU $80     
+  158         0040        	T1RL_CTL    EQU $40      (Renamed to avoid conflict with Reg T1RL)
+  159         0010        	T1M1        EQU $10     
+  160         0008        	T1M0        EQU $08     
+  Wed Nov 04 11:24:29 2026                                                                                               Page    4
+
+
+
+
+  161         0004        	T1K2        EQU $04     
+  162         0002        	T1K1        EQU $02     
+  163         0001        	T1K0        EQU $01     
+  164                     	
+  165                     	; --- PWM Control ---
+  166         3008        	TCON        EQU $3008   ; Timer/PWM Control
+  167         0080        	T1ORWE      EQU $80     
+  168         0040        	T1OR        EQU $40     
+  169         0020        	T0ORWE      EQU $20     
+  170         0010        	T0OR        EQU $10     
+  171         0008        	T1CKOE      EQU $08     
+  172         0004        	T0CKOE      EQU $04     
+  173         0002        	EPWM1       EQU $02     
+  174         0001        	EPWM0       EQU $01     
+  175                     	
+  176         3009        	PWM0DA      EQU $3009   ; PWM 0 Data
+  177                     	
+  178                     	;=========================================================================
+  179                     	; UART INTERFACE (Serial 1)
+  180                     	;=========================================================================
+  181         3030        	S1CON       EQU $3030   ; Serial 1 Control
+  182         0080        	SM01        EQU $80     
+  183         0040        	SM11        EQU $40     
+  184         0020        	SM21        EQU $20     
+  185         0010        	REN1        EQU $10     
+  186         0008        	TB81        EQU $08     
+  187         0004        	RB81        EQU $04     
+  188         0002        	TI1         EQU $02     
+  189         0001        	RI1         EQU $01     
+  190                     	
+  191         3031        	S1BUF       EQU $3031   ; Serial 1 Buffer
+  192         3032        	S1BRT       EQU $3032   ; Baud Rate Timer
+  193         3033        	S1BRC       EQU $3033   ; Baud Rate Counter
+  194                     	
+  195         3034        	S1CFG       EQU $3034   ; Serial 1 Configuration
+  196         0080        	SM31        EQU $80     
+  197         0040        	S1MOD3      EQU $40     
+  198         0020        	S1DOR       EQU $20     
+  199         0010        	S1TR        EQU $10     
+  200         0008        	S1MOD1      EQU $08     
+  201         0004        	S1TX16      EQU $04     
+  202         0002        	S1CKOE      EQU $02     
+  203         0001        	S1TME       EQU $01     
+  204                     	
+  205                     	;=========================================================================
+  206                     	; ADC MODULE
+  207                     	;=========================================================================
+  208         3020        	ADCON       EQU $3020   ; ADC Control
+  209         0080        	ADCEN       EQU $80     
+  210         0040        	ADCS        EQU $40     
+  211         0020        	IVREN       EQU $20     
+  212         0010        	ADTM0       EQU $10     
+  213         0008        	CHS3        EQU $08     
+  214         0004        	CHS2        EQU $04     
+  215         0002        	CHS1        EQU $02     
+  216         0001        	CHS0        EQU $01     
+  217                     	
+  Wed Nov 04 11:24:29 2026                                                                                               Page    5
+
+
+
+
+  218         3021        	ADCDL       EQU $3021   ; ADC Data Low
+  219         3022        	ADCDH0       EQU $3022   ; ADC Data High
+  220                     	
+  221         3023        	ADCFG0      EQU $3023   ; ADC Config 0
+  222         0080        	ADCKS2      EQU $80     
+  223         0040        	ADCKS1      EQU $40     
+  224         0020        	ADCKS0      EQU $20     
+  225         0010        	ADRJ        EQU $10     
+  226         0008        	ADHS        EQU $08     
+  227         0004        	IAOFF       EQU $04     
+  228         0002        	AAOFF       EQU $02     
+  229         0001        	AAHLT       EQU $01     
+  230                     	
+  231         3024        	ADCFG1      EQU $3024   ; ADC Config 1
+  232         0080        	ADPS1       EQU $80     
+  233         0040        	ADPS0       EQU $40     
+  234                     	
+  235                     	
+  236         3025        	ADCFG2      EQU $3025   ; ADC Config 2
+  237                     	
+  238                     	
+  239                     	;=========================================================================
+  240                     	; ANALOG COMPARATOR (AC0)
+  241                     	;=========================================================================
+  242                     	; --- AC0 Module (Address $302C) ---
+  243         302C        	AC0CON      EQU $302C   ; AC0 Control
+  244         0080        	AC0LP       EQU $80     
+  245         0040        	AC1PD       EQU $40     
+  246         0020        	AC1OUT      EQU $20     
+  247         0010        	AC1F        EQU $10     
+  248         0008        	AC0EN       EQU $08     
+  249         0004        	AC1INV      EQU $04     
+  250         0002        	AC0M1       EQU $02     
+  251         0001        	AC0M0       EQU $01     
+  252                     	
+  253         302D        	AC0CFG0     EQU $302D   ; AC0 Config 0
+  254         0080        	AC0CS3      EQU $80     
+  255         0040        	AC0CS2      EQU $40     
+  256         0020        	AC0CS1      EQU $20     
+  257         0010        	AC0CS0      EQU $10     
+  258         0008        	AC0TD1      EQU $08     
+  259         0004        	AC0TD0      EQU $04     
+  260         0002        	SWE1        EQU $02     
+  261         0001        	ASE1        EQU $01     
+  262                     	
+  263         302E        	AC0CFG1     EQU $302E   ; AC0 Config 1
+  264         0080        	R2S3        EQU $80     
+  265         0040        	R2S2        EQU $40     
+  266         0020        	R2S1        EQU $20     
+  267         0010        	R2S0        EQU $10     
+  268                     	
+  269                     	; --- BOD1 Dynamic Control (Address $3028) ---
+  270                     	;AC0CON  EQU $3028   ; BOD AC0 Control
+  271                     	;AC0LP   EQU $80     
+  272                     	;AC0PD   EQU $40     
+  273                     	;AC0OUT  EQU $20     
+  274                     	;AC0F    EQU $10     
+  Wed Nov 04 11:24:29 2026                                                                                               Page    6
+
+
+
+
+  275                     	;AC0EN   EQU $08     
+  276                     	;AC0INV  EQU $04     
+  277                     	;AC0M1   EQU $02     
+  278                     	;AC0M0   EQU $01     
+  279                     	;
+  280                     	;AC0CFG0 EQU $3029   ; BOD AC0 Config 0
+  281                     	;AC0CS3  EQU $80     
+  282                     	;AC0CS2  EQU $40     
+  283                     	;AC0CS1  EQU $20     
+  284                     	;AC0CS0  EQU $10     
+  285                     	;AC0TD1  EQU $08     
+  286                     	;AC0TD0  EQU $04     
+  287                     	;SWE0        EQU $02     
+  288                     	;ASE0        EQU $01     
+  289                     	;
+  290                     	;AC0CFG1 EQU $302A   ; BOD AC0 Config 1
+  291                     	;R4HS3       EQU $80     
+  292                     	;R4HS2       EQU $40     
+  293                     	;R4HS1       EQU $20     
+  294                     	;R4HS0       EQU $10     
+  295                     	;R3HEN       EQU $08     
+  296                     	;R2HEN       EQU $04     
+  297                     	;AC0NIH      EQU $02     
+  298                     	;AC0HE       EQU $01     
+  299                     	;
+  300                     	;AC0CFG2 EQU $302B   ; BOD AC0 Config 2
+  301                     	;R4LS3       EQU $80     
+  302                     	;R4LS2       EQU $40     
+  303                     	;R4LS1       EQU $20     
+  304                     	;R4LS0       EQU $10     
+  305                     	;R3LEN       EQU $08     
+  306                     	;R2LEN       EQU $04     
+  307                     	;AC0NIL      EQU $02     
+  308                     	;AC0LE       EQU $01     
+  309                     	
+  310                     	;=========================================================================
+  311                     	; NFC / RF BUFFER
+  312                     	;=========================================================================
+  313         3040        	RF_ID0      EQU $3040   ; RF UID0
+  314         3041        	RF_ID1      EQU $3041   ; RF UID1
+  315         3042        	RF_ID2      EQU $3042   ; RF UID2
+  316         3043        	RF_ID3      EQU $3043   ; RF UID3
+  317         3044        	RF_ID4      EQU $3044   ; RF UID4
+  318         3045        	RF_ID5      EQU $3045   ; RF UID5
+  319         3046        	RF_ID6      EQU $3046   ; RF UID6
+  320         3047        	RF_INIT     EQU $3047   ; RF Configuration
+  321                     	
+  322         3060        	RF_CMD      EQU $3060   ; RF Command
+  323         3061        	RF_Page     EQU $3061   ; RF Page
+  324         3062        	RF_Parm     EQU $3062   ; RF Parameter
+  325         3063        	RF_STS      EQU $3063   ; RF Status
+  326         3064        	RF_DA0      EQU $3064   ; RF Data 0
+  327         3065        	RF_DA1      EQU $3065   ; RF Data 1
+  328         3066        	RF_DA2      EQU $3066   ; RF Data 2
+  329         3067        	RF_DA3      EQU $3067   ; RF Data 3
+  330         3068        	RF_DA4      EQU $3068   ; RF Data 4
+  331         3069        	RF_DA5      EQU $3069   ; RF Data 5
+  Wed Nov 04 11:24:29 2026                                                                                               Page    7
+
+
+
+
+  332         306A        	RF_DA6      EQU $306A   ; RF Data 6
+  333         306B        	RF_DA7      EQU $306B   ; RF Data 7
+  334         306C        	RF_DA8      EQU $306C   ; RF Data 8
+  335         306D        	RF_DA9      EQU $306D   ; RF Data 9
+  336         306E        	RF_DA10     EQU $306E   ; RF Data 10
+  337         306F        	RF_DA11     EQU $306F   ; RF Data 11
+  338         3070        	RF_DA12     EQU $3070   ; RF Data 12
+  339         3071        	RF_DA13     EQU $3071   ; RF Data 13
+  340         3072        	RF_DA14     EQU $3072   ; RF Data 14
+  341         3073        	RF_DA15     EQU $3073   ; RF Data 15
+  342                     	
+  343                     	;=========================================================================
+  344                     	; GPL / CRC
+  345                     	;=========================================================================
+  346         00EA        	BOREV       EQU $00EA   ; Bit Order Reversed
+  347         00EB        	CRC0DA      EQU $00EB   ; CRC0 Data
+  348         300C        	CRC0CR      EQU $300C   ; CRC0 Control
+  349         0080        	PAR         EQU $80     
+  350         0002        	CRCDS1      EQU $02     
+  351         0001        	CRCDS0      EQU $01     
+  352                     	
+  353                     	;=========================================================================
+  354                     	; MATH ACCELERATION (MDU)
+  355                     	;=========================================================================
+  356         3036        	MDU_A       EQU $3036   ; MDU A Register
+  357         3037        	MDU_B       EQU $3037   ; MDU B Register
+  358         3038        	MDUCR       EQU $3038   ; MDU Control
+  359         0004        	MDUM0       EQU $04     
+  360         0002        	MDUST       EQU $02     
+  361         0001        	MDUS        EQU $01     
+  362                     	
+  363                     	;=========================================================================
+  364                     	; AES128 CRYPTO
+  365                     	;=========================================================================
+  366         00EF        	AES_CR0     EQU $00EF   ; AES Control 0
+  367         0080        	AES_RST     EQU $80     
+  368         0040        	KIN_RDY     EQU $40     
+  369         0008        	AES_M1      EQU $08     
+  370         0004        	AES_M0      EQU $04     
+  371         0002        	ENCPT       EQU $02     
+  372         0001        	AES_STR     EQU $01     
+  373                     	
+  374         00F0        	AES_DA0     EQU $00F0   
+  375         00F1        	AES_DA1     EQU $00F1
+  376         00F2        	AES_DA2     EQU $00F2
+  377         00F3        	AES_DA3     EQU $00F3
+  378         00F4        	AES_DA4     EQU $00F4
+  379         00F5        	AES_DA5     EQU $00F5
+  380         00F6        	AES_DA6     EQU $00F6
+  381         00F7        	AES_DA7     EQU $00F7
+  382         00F8        	AES_DA8     EQU $00F8
+  383         00F9        	AES_DA9     EQU $00F9
+  384         00FA        	AES_DA10    EQU $00FA
+  385         00FB        	AES_DA11    EQU $00FB
+  386         00FC        	AES_DA12    EQU $00FC
+  387         00FD        	AES_DA13    EQU $00FD
+  388         00FE        	AES_DA14    EQU $00FE
+  Wed Nov 04 11:24:29 2026                                                                                               Page    8
+
+
+
+
+  389         00FF        	AES_DA15    EQU $00FF 
+  390                     	
+  391                     	
+  392                     	;=========================================================================
+  393                     	; AUXILIARY REGISTERS
+  394                     	;=========================================================================
+  395         303F        	AUXR0       EQU $303F
+  396         0080        	PSS11       EQU $80     
+  397         0040        	PSS10       EQU $40     
+  398         0020        	PSEI21      EQU $20     
+  399         0010        	PSEI20      EQU $10     
+  400         0008        	PSEI11      EQU $08     
+  401         0004        	PSEI10      EQU $04     
+  402         0002        	PSEI01      EQU $02     
+  403         0001        	PSEI00      EQU $01     
+  404                     	
+  405         303E        	AUXR1       EQU $303E
+  406         0080        	PSRO1       EQU $80     
+  407         0040        	PSRO0       EQU $40     
+  408         0010        	PSS1CO      EQU $10     
+  409         0008        	PSS1MI      EQU $08     
+  410         0004        	PST1        EQU $04     
+  411         0002        	PSPWM1      EQU $02     
+  412         0001        	PSPWM0      EQU $01     
+  413                     	
+  414         303D        	AUXR2       EQU $303D
+  415         0002        	BO1O        EQU $02     
+  416         0001        	BO0O        EQU $01     
+  417                     	
+  418                     	;=========================================================================
+  419                     	; IAP / PROTECT
+  420                     	;=========================================================================
+  421         300A        	IAP_PR      EQU $300A   ; IAP Write Protect Key
+  422                     	
+  423                     	
+  424         300B        	IFMT        EQU $300B   ; IAP Command
+  425         0080        	IAPEN       EQU $80     
+  426         0002        	IMS1        EQU $02     
+  427         0001        	IMS0        EQU $01     
+  428                     	
+  429         300F        	PWPR        EQU $300F   ; Protect Write Pattern
+  430                     	
+  431                     	
+  432                     	;=========================================================================
+  433                     	; POWER & CLOCK CONTROL
+  434                     	;=========================================================================
+  435         3010        	PWR_CTL     EQU $3010   ; Power Control
+  436         0080        	SCKS2       EQU $80     
+  437         0040        	SCKS1       EQU $40     
+  438         0020        	SCKS0       EQU $20     
+  439         0010        	HSEPSM0     EQU $10     
+  440         0008        	OSCS1       EQU $08     
+  441         0004        	OSCS0       EQU $04     
+  442         0002        	STOP        EQU $02     
+  443         0001        	HALT        EQU $01     
+  444                     	
+  445         3011        	CK_CTL      EQU $3011   ; Clock Control
+  Wed Nov 04 11:24:29 2026                                                                                               Page    9
+
+
+
+
+  446         0080        	GFILDS      EQU $80     
+  447         0040        	NFCE        EQU $40     
+  448         0020        	LSCKS       EQU $20     
+  449         0010        	XTGS        EQU $10     
+  450         0008        	MCDX        EQU $08     
+  451         0004        	MCDE        EQU $04     
+  452         0002        	XTEN        EQU $02     
+  453         0001        	IHEN        EQU $01     
+  454                     	
+  455         3012        	MCK_CTL     EQU $3012   ; Module Clock Control
+  456         0080        	AESCE       EQU $80     
+  457         0040        	GPLCE       EQU $40     
+  458         0020        	AC1CE       EQU $20     
+  459         0010        	AC0CE       EQU $10     
+  460         0008        	ADCKE       EQU $08     
+  461         0004        	URCE        EQU $04     
+  462         0002        	TM1CE       EQU $02     
+  463         0001        	TM0CE       EQU $01     
+  464                     	
+  465         3013        	CKS_STS     EQU $3013   ; Clock Switch Status
+  466         0080        	XTOR        EQU $80     
+  467         0040        	LS_CK       EQU $40     
+  468         0008        	CKST3       EQU $08     
+  469         0004        	CKST2       EQU $04     
+  470         0002        	CKST1       EQU $02     
+  471         0001        	CKST0       EQU $01     
+  472                     	
+  473         301E        	PWR_CR1     EQU $301E   ; Power Control 1
+  474         0080        	BO1S2       EQU $80     
+  475         0040        	BO1S1       EQU $40     
+  476         0020        	BO1S0       EQU $20     
+  477         0008        	AWBOD1      EQU $08     
+  478         0004        	AWBOD0      EQU $04     
+  479         0002        	EBOD1       EQU $02     
+  480         0001        	EBOD0       EQU $01     
+  481                     	
+  482         301F        	PWR_CR2     EQU $301F   ; Power Control 2
+  483         0080        	LVRDS       EQU $80     
+  484         0040        	BODLVW      EQU $40     
+  485         0020        	ILDS        EQU $20     
+  486         0002        	FLDO        EQU $02     
+  487         0001        	LDOL        EQU $01     
+  488                     	
+  489                     	;=========================================================================
+  490                     	; RESET CONTROL
+  491                     	;=========================================================================
+  492         3014        	RST_CTL     EQU $3014   ; Reset Control
+  493         0080        	SWR         EQU $80     
+  494         0040        	UIDWE       EQU $40     
+  495         0020        	RFPG        EQU $20     
+  496         0010        	RFPORN      EQU $10     
+  497         0001        	NVREN       EQU $01     
+  498                     	
+  499         3015        	RST_SRF0    EQU $3015   ; Reset Source Flag 0
+  500         0080        	POF         EQU $80     
+  501         0040        	EXRF        EQU $40     
+  502         0020        	SWRF        EQU $20     
+  Wed Nov 04 11:24:29 2026                                                                                               Page   10
+
+
+
+
+  503         0010        	WRF         EQU $10     
+  504         0008        	IARF        EQU $08     
+  505                     	
+  506         3016        	RST_SRF1    EQU $3016   ; Reset Source Flag 1
+  507         0080        	PNDF        EQU $80     
+  508         0040        	PORF0       EQU $40     
+  509         0020        	DBLVR       EQU $20     
+  510         0010        	LVRF0       EQU $10     
+  511         0008        	DPORF       EQU $08     
+  512         0001        	PORF        EQU $01     
+  513                     	
+  514                     	
+  515                     	;=========================================================================
+  516                     	; WATCH DOG TIMER (WDT)
+  517                     	;=========================================================================
+  518         3018        	WDT_CR0     EQU $3018   ; WDT Control 0
+  519         0080        	WREN        EQU $80     
+  520         0040        	NSW         EQU $40     
+  521         0020        	WTCS1       EQU $20     
+  522         0010        	WTCS0       EQU $10     
+  523         0008        	WIDL        EQU $08     
+  524         0004        	WPS2        EQU $04     
+  525         0002        	WPS1        EQU $02     
+  526         0001        	WPS0        EQU $01     
+  527                     	
+  528         3019        	WDT_CR1     EQU $3019   ; WDT Control 1
+  529         0080        	CLRW        EQU $80     
+  530         0040        	ENW         EQU $40     
+  531         0010        	WDTFS       EQU $10     
+  532                     	
+  533                     	;=========================================================================
+  534                     	; REAL TIME CLOCK (RTC)
+  535                     	;=========================================================================
+  536         301A        	RTC_CR      EQU $301A   ; RTC Control
+  537         0080        	RTCE        EQU $80     
+  538         0040        	RTCO        EQU $40     
+  539         0020        	RTCRL5      EQU $20     
+  540         0010        	RTCRL4      EQU $10     
+  541         0008        	RTCRL3      EQU $08     
+  542         0004        	RTCRL2      EQU $04     
+  543         0002        	RTCRL1      EQU $02     
+  544         0001        	RTCRL0      EQU $01     
+  545                     	
+  546         301B        	RTC_TM      EQU $301B   ; RTC Timer
+  547         0080        	RPSC1       EQU $80     
+  548         0040        	RPSC0       EQU $40     
+  549         0020        	RTCCT5      EQU $20     
+  550         0010        	RTCCT4      EQU $10     
+  551         0008        	RTCCT3      EQU $08     
+  552         0004        	RTCCT2      EQU $04     
+  553         0002        	RTCCT1      EQU $02     
+  554         0001        	RTCCT0      EQU $01     
+  555                     	
+  556         301C        	RTC_CS      EQU $301C   ; RTC Clock Select
+  557         0080        	RCSS2       EQU $80     
+  558         0040        	RCSS1       EQU $40     
+  559         0020        	RCSS0       EQU $20     
+  Wed Nov 04 11:24:29 2026                                                                                               Page   11
+
+
+
+
+  560         0010        	RPSC2       EQU $10     
+  561         0008        	RTCCS3      EQU $08     
+  562         0004        	RTCCS2      EQU $04     
+  563         0002        	RTCCS1      EQU $02     
+  564         0001        	RTCCS0      EQU $01     
+  565                     	
+  566         301D        	RTC_CR1     EQU $301D   ; RTC Control 1
+  567         0080        	CKOR_ST     EQU $80     
+  568         0040        	CKORM       EQU $40     
+  569                     	
+  570                     	;=========================================================================
+  571                     	; HARDWARE OPTIONS (ORxx)
+  572                     	;=========================================================================
+  573         3100        	OR00        EQU $3100
+  574         0010        	NLOCK       EQU $10     
+  575         0001        	OSCS        EQU $01     
+  576                     	
+  577         3101        	OR01        EQU $3101
+  578         0080        	WDTWFWP     EQU $80
+  579         0040        	NSWDT       EQU $40
+  580         0020        	HWENW       EQU $20
+  581         0010        	WRENO       EQU $10
+  582         0008        	HWIDL       EQU $08
+  583         0004        	HWPS2       EQU $04
+  584         0002        	HWPS1       EQU $02
+  585         0001        	HWPS0       EQU $01
+  586                     	
+  587         3102        	OR2         EQU $3102            
+  588         3103        	OR3         EQU $3103                          
+  589         3104        	OR4         EQU $3104                         
+  590         3105        	OR5         EQU $3105                
+  591         3106        	OR6         EQU $3106           
+  592         3107        	OR7         EQU $3107                                         
+  593                     	
+  594                     	;--------------------------------------------------------------------------------
+  595                     	
+  596                     	;=====================================================
+  597                     	;	MACRO DEFINITION
+  598                     	;=====================================================
+  599                     	;--- Watch-Dog Timer Clear ---
+  600                     	clear_WDT	.MACRO              
+  601                     		LDA	#5Ah                    
+  602                     		STA	PWPR                    
+  603                     		LDA	WDT_CR1
+  604                     		ORA	#80H
+  605                     		STA WDT_CR1      
+  606                     		.ENDM                       
+  607                     	
+  608                     	;--- system initial command ---
+  609                     	system_init .macro
+  610                     		SEI		;disable IRQ interrupt
+  611                     		.endm
+  612                     	
+  613                     	set_stack_pointer_to .macro stack_start
+  614                     		LDX	#.low.stack_start
+  615                     		TXS
+  616                     		.endm
+  Wed Nov 04 11:24:29 2026                                                                                               Page   12
+
+
+
+
+  617                     	
+  618                     	clear_RAM_from_00_to .macro clear_RAM_end
+  619                     		LDX	#00h
+  620                     	  ?clear_RAM:
+  621                     		STZ	00h,x
+  622                     		CPX	#clear_RAM_end
+  623                     		BEQ	?clear_RAM_done
+  624                     		INX
+  625                     		BRA	?clear_RAM
+  626                     	  ?clear_RAM_done:
+  627                     		.endm
+  628                     	
+  629                     	
+  630                     	
+  631                     	;    .include FA277_SFR.h
+  632                     	
+  633                     	;=== SFR ===
+  634                     	;IRQ1_EN   .EQU    3002h
+  635                     	
+  636                     	;P1M0    .EQU    3004h
+  637                     	;  xyM1  xyM0  Port Mode
+  638                     	;    0    0    Analog Input Only (default)
+  639                     	;    0    1    Push-Pull Output
+  640                     	;    1    0    Open-Drain Output / General Digital Input (Port Pin set to “1”)
+  641                     	;    1    1    Open-Drain with Pull-up resistor
+  642                     	;P3M0    .EQU    3005h
+  643                     	;  xyM1  xyM0  Port Mode
+  644                     	;    0    0    Analog I/O
+  645                     	;    0    1    Push-Pull Output
+  646                     	;    1    0    Open-Drain Output / General Digital Input (Port Pin set to “1”)
+  647                     	;    1    1    Quasi-Bidirectional (default)
+  648                     	
+  649         0000        	Px0_AN  .EQU    00000000B   ;00h
+  650         0001        	Px0_PP  .EQU    00000001B   ;01h
+  651         0002        	Px0_OD  .EQU    00000010B   ;02h
+  652         0003        	Px0_QB  .EQU    00000011B   ;03h
+  653         0000        	Px1_AN  .EQU    00000000B   ;00h
+  654         0004        	Px1_PP  .EQU    00000100B   ;04h
+  655         0008        	Px1_OD  .EQU    00001000B   ;08h
+  656         000C        	Px1_QB  .EQU    00001100B   ;0Ch
+  657         0000        	Px2_AN  .EQU    00000000B   ;00h
+  658         0010        	Px2_PP  .EQU    00010000B   ;10h
+  659         0020        	Px2_OD  .EQU    00100000B   ;20h
+  660         0030        	Px2_QB  .EQU    00110000B   ;30h
+  661         0000        	Px3_AN  .EQU    00000000B   ;00h
+  662         0040        	Px3_PP  .EQU    01000000B   ;40h
+  663         0080        	Px3_OD  .EQU    10000000B   ;80h
+  664         00C0        	Px3_QB  .EQU    11000000B   ;C0h
+  665                     	
+  666                     	
+  667         3018        	WDTCR0   .EQU    3018h
+  668                     	
+  669         3019        	WDTCR1   .EQU    3019h
+  670                     	;WDTFS    .EQU    00010000B
+  671                     	;ENW      .EQU    01000000B
+  672                     	;CLRW     .EQU    10000000B
+  673                     	
+  Wed Nov 04 11:24:29 2026                                                                                               Page   13
+
+
+
+
+  674  00000000             	P1_BUF   .DS    1
+  675  00000001             	PWR_CTL_TEMP   .DS    1
+  676                     	
+  677         005A        	PWPR_Key    .EQU    5Ah ;PWPR
+  678                     	
+  679                     	;   .include macro.asm
+  680                     	
+  681                     	;===================================================================
+  682                     	; RAM DECLARATION SECTION ;()
+  683                     	;===================================================================
+  684                     	    .PAGE0
+  685                     	;=== Variable in SRAM(zp) ===
+  686  00000000             	RAM00   .DS     1
+  687  00000001             	RAM01   .DS     1
+  688  00000002             	RAM02   .DS     1
+  689  00000003             	RAM03   .DS     1
+  690  00000004             	RAM04   .DS     1
+  691         0040        	RAM64   .EQU    64
+  692                     	    .ENDS
+  693                     	
+  694                     	
+  695                     	;=============================================
+  696                     	; MAIN PROGRAM ;()
+  697                     	;=============================================
+  698  0000BC00             	    .ORG    BC00H
+  699                     	reset:  ;Main program start here
+  700  0000BC00 78          	    SEI
+  701  0000BC01 A2 FF       	    LDX #FFh
+  702  0000BC03 AA          	    TAX ;Initial stack point
+  703                     	
+  704                     	
+  705                     	
+  706                     	
+  707                     	
+  708                     	
+  709                     	
+  710                     	
+  711                     	
+  712  0000BC04 A9 55       	    LDA #Px0_PP+Px1_PP+Px2_PP+Px3_PP
+  713  0000BC06 8D 04 30    	    STA P1M0
+  714                     	    ;STA P3M0
+  715  0000BC09 A9 00       	    LDA #00h
+  716  0000BC0B 85 E4       	    STA P1_DAT
+  717  0000BC0D 85 E5       	    STA P3_DAT
+  718  0000BC0F A9 05       	    LDA #05h
+  719  0000BC11 85 E4       	    STA P1_DAT
+  720  0000BC13 85 E5       	    STA P3_DAT
+  721  0000BC15 A9 0A       	    LDA #0Ah
+  722  0000BC17 85 E4       	    STA P1_DAT
+  723  0000BC19 85 E5       	    STA P3_DAT
+  724  0000BC1B A9 FF       	    LDA #FFh
+  725  0000BC1D 85 E4       	    STA P1_DAT
+  726  0000BC1F 85 E5       	    STA P3_DAT
+  727                     	
+  728  0000BC21 8D 00 00    	    STA P1_BUF
+  729                     	
+  730                     	;------------------------------------
+  Wed Nov 04 11:24:29 2026                                                                                               Page   14
+
+
+
+
+  731                     	;>--- STATEMENTS TO TEST Ext INT --- ;()
+  732                     	;------------------------------------
+  733                     	;TEST_ExtINT:
+  734  0000BC24             	LOOP:
+  735  0000BC24             	        
+  736  0000BC24 A9 FF       	        LDA #FFh ;P3 all QB mode
+  737  0000BC26 8D 05 30    	        STA P3M0
+  738                     	
+  739  0000BC29 A9 3F       	        LDA #3Fh ;ExINT0/1/2 IEx triggered control to dual edge
+  740  0000BC2B 8D 07 30    	        STA EICR1
+  741  0000BC2E A9 70       	        LDA #IE2+IE1+IE0 ;Clear ExINT flag
+  742  0000BC30 85 E1       	        STA IRQ0_STS
+  743  0000BC32 A9 70       	        LDA #EX2+EX1+EX0 ;ExINT0/1/2 interrupt enable
+  744  0000BC34 8D 01 30    	        STA IRQ0_EN
+  745  0000BC37 58          	        CLI
+  746                     	
+  747                     	        ;Entry to HALT mode
+  748                     	        ;LDA #PWPR_Key
+  749                     	        ;STA PWPR
+  750                     	        ;LDA #HALT
+  751                     	        ;STA PWR_CTL
+  752                     	
+  753  0000BC38             	       
+  754                     	        ;LDA #$DC
+  755                     	        ;STA $30FF
+  756  0000BC38             	main_loop:
+  757                     	
+  758  0000BC38 A2 00       	        LDX #00h
+  759  0000BC3A             	 P10_Toogle:
+  760  0000BC3A AD 00 00    	        LDA P1_BUF
+  761  0000BC3D 49 01       	        XOR #01h
+  762  0000BC3F 85 E4       	        STA P1_DAT
+  763  0000BC41 8D 00 00    	        STA P1_BUF
+  764  0000BC44 E8          	        INX
+  765  0000BC45 E0 09       	        CPX #09h
+  766  0000BC47 90 F1       	        BLT P10_Toogle
+  767                     	
+  768  0000BC49             	IEx_Check:
+  769  0000BC49 A5 E1       	        LDA IRQ0_STS
+  770  0000BC4B 29 70       	        AND #IE2+IE1+IE0
+  771  0000BC4D D0 FA       	        BNE IEx_Check
+  772  0000BC4F             	  
+  773                     	        ;Entry to STOP mode
+  774  0000BC4F AD 10 30    	        LDA PWR_CTL
+  775  0000BC52 8D 01 00    	        STA PWR_CTL_TEMP
+  776                     	
+  777  0000BC55 A9 5A       	        LDA #PWPR_Key
+  778  0000BC57 8D 0F 30    	        STA PWPR
+  779  0000BC5A A9 02       	        LDA #STOP
+  780  0000BC5C 0D 01 00    	        ORA PWR_CTL_TEMP
+  781  0000BC5F 8D 10 30    	        STA PWR_CTL
+  782                     	
+  783  0000BC62 EA          	        NOP
+  784  0000BC63 EA          	        NOP
+  785                     	
+  786  0000BC64 4C 38 BC    	        jmp main_loop
+  787                     	
+  Wed Nov 04 11:24:29 2026                                                                                               Page   15
+
+
+
+
+  788                     	
+  789                     	;=============================================
+  790                     	; INTERRUPT SERVICE ROUTINE ;()
+  791                     	;=============================================
+  792  0000BC67             	irq_isr:
+  793  0000BC67 48          	    PHA
+  794  0000BC68 A5 E1       	    LDA IRQ0_STS
+  795  0000BC6A 29 40       	    AND #IE2
+  796  0000BC6C F0 0E       	    BEQ ExtINT1_check
+  797  0000BC6E A9 40       	    LDA #IE2 ;Clear IE2
+  798  0000BC70 85 E1       	    STA IRQ0_STS
+  799  0000BC72 AD 00 00    	    LDA P1_BUF;P11	int2=p30
+  800  0000BC75 49 02       	    XOR #02h
+  801  0000BC77 85 E4       	    STA P1_DAT
+  802  0000BC79 8D 00 00    		STA P1_BUF
+  803                     	    ;JMP irq_isr_end
+  804                     	
+  805  0000BC7C             	ExtINT1_check:
+  806  0000BC7C A5 E1       	    LDA IRQ0_STS
+  807  0000BC7E 29 20       	    AND #IE1
+  808  0000BC80 F0 0E       	    BEQ ExtINT0_check
+  809  0000BC82 A9 20       	    LDA #IE1 ;Clear IE1
+  810  0000BC84 85 E1       	    STA IRQ0_STS
+  811  0000BC86 AD 00 00    	    LDA P1_BUF  ;P12	int1=p33(45)
+  812  0000BC89 49 04       	    XOR #04h
+  813  0000BC8B 85 E4       	    STA P1_DAT
+  814  0000BC8D 8D 00 00    	    STA P1_BUF
+  815                     	    ;JMP irq_isr_end
+  816                     	
+  817  0000BC90             	ExtINT0_check:
+  818  0000BC90 A5 E1       	    LDA IRQ0_STS
+  819  0000BC92 29 10       	    AND #IE0
+  820  0000BC94 F0 0E       	    BEQ irq_isr_end
+  821  0000BC96 A9 10       	    LDA #IE0 ;Clear IE0
+  822  0000BC98 85 E1       	    STA IRQ0_STS
+  823  0000BC9A AD 00 00    	    LDA P1_BUF  ;P13	int0=p32(44)
+  824  0000BC9D 49 08       	    XOR #08h
+  825  0000BC9F 85 E4       	    STA P1_DAT
+  826  0000BCA1 8D 00 00    	    STA P1_BUF
+  827                     	
+  828  0000BCA4             	irq_isr_end:
+  829  0000BCA4 68          	    PLA
+  830  0000BCA5 40          	    rti
+  831                     	
+  832                     	
+  833                     	;=============================================
+  834                     	; INTERRUPT VECTOR SECTION ;()
+  835                     	;=============================================
+  836  0000FFFC             	    .org    FFFCH
+  837  0000FFFC             	VECTOR:
+  838                     	    ;.DW reset       ;reset
+  839                     	    ;.DW irq_isr     ;IRQ interrupt vector
+  840                     	
+  841  0000FFFC 00          	    .DB .LOW.reset      ;reset
+  842  0000FFFD BC          	    .DB .HIGH.reset     ;reset
+  843  0000FFFE 67          	    .DB .LOW.irq_isr    ;IRQ interrupt vector
+  844  0000FFFF BC          	    .DB .HIGH.irq_isr   ;IRQ interrupt vector
+  Wed Nov 04 11:24:29 2026                                                                                               Page   16
+
+
+
+
+  845                     	
+  846                     	
+
+
+             Lines Assembled : 846                  Errors : 0
+
+
+
