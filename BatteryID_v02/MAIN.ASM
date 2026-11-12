@@ -8,40 +8,54 @@
 ;===================================================================
     .include FA277_SFR.h
 
-MY_DEV_ID            .EQU   01h  ; 定義這台設備的 Device ID
-PWPR_Key             .EQU   5Ah  ; PWPR key
-RST_SRF0              EQU 3015h  ; Reset Source Flag
-RST_SRF1              EQU 3016h  ; Reset Source Flag
-WDT_CR0               EQU 3018h  ; Watch-Dog-Timer Control Register 0
-WDT_CR1               EQU 3019h  ; Watch-Dog-Timer Control Register 0
-ADCDH0                EQU 3022h  ; ADC Data High Byte
-RTC_CR                EQU 301Ah  ; Real-Time-Clock Control Register
-RTC_TM                EQU 301Bh  ; Real-Time-Clock Timer Register
-RTC_CS                EQU 301Ch  ; RTC Clock Select Register 4
-BO1CR0                EQU 3028h  ; BOD1 Control 0
-BO1CFG0               EQU 3029h  ; BOD1 Configuration 0
-BO1CFG1               EQU 302Ah  ; BOD1 Configuration 1
+
+MY_DEV_ID            .EQU   01h      ; 定義這台設備的 Device ID
+
+P1_BUF         .DS    1      
+PWR_CTL_TEMP   .DS    1
+
+PWPR_Key             .EQU   5Ah ;PWPR key
+;ADC_SYSCLKD2          EQU   20H
+;ADC_RightJustified    EQU   10H
+;ADC_HighestPower      EQU   00H
+;ADC_AIN0              EQU   00H
+;ADC_IntVREF           EQU   08H
+
+RST_SRF0              EQU 3015h  ;Reset Source Flag
+RST_SRF1              EQU 3016h  ;Reset Source Flag
+WDT_CR0               EQU 3018h  ;Watch-Dog-Timer Control Register 0
+WDT_CR1               EQU 3019h  ;Watch-Dog-Timer Control Register 0
+ADCDH0                EQU 3022h  ;
+RTC_CR                EQU 301Ah  ;Real-Time-Clock Control Register
+RTC_TM                EQU 301Bh  ;Real-Time-Clock Timer Register
+RTC_CS                EQU 301Ch  ;RTC Clock Select Register 4
+
+BO1CR0                EQU 3028h  ;BOD1 Control 0
+BO1CFG0               EQU 3029h  ;BOD1 Configuration 0
+BO1CFG1               EQU 302Ah  ;BOD1 Configuration 1
+
 AC0CR0                EQU 302Ch  ; Analog Comparator 0 Control Register 0
 AC0CR1                EQU 302Dh  ; Analog Comparator 0 Control Register 1
-OR08                  EQU 3108H  ; Option Registore 08
-TRMCC_ADC01           EQU 724DH  ; 大電流預存值(使用需載入OR08)
-TRMCC_ADC0            EQU 7252H  ; 小電流預存值(使用需載入OR08)
-   
+
+OR08                  EQU 3108H
+
+TRMCC_ADC01           EQU 724DH   
+TRMCC_ADC0            EQU 7252H   
     .PAGE0
-RAM00                .DS     1   ; RST_SRF0 buffer
-RAM01                .DS     1   ; RST_SRF1 buffer
+RAM00                .DS     1
+RAM01                .DS     1
 WAKEUP_FLAG          .DS     1   ; 標記 MCU 是否處於被喚醒狀態
 RX_READY             .DS     1   ; 標記 UART 是否收到一筆新資料
 RX_DATA              .DS     1   ; 存放 UART 收到的最新資料
 TIMEOUT_L            .DS     1   ; 超時防護計數器 (低位元組)
 TIMEOUT_H            .DS     1   ; 超時防護計數器 (高位元組)
-; <---UART 專用變數 --->
+
 SAVE_LEN             .DS     1   ; 備份原始收到的長度，回傳時要用
 PKT_LEN              .DS     1   ; 封包剩餘長度計數器
 CHK_SUM              .DS     1   ; 校驗和累加器
 RX_TAG               .DS     1   ; 儲存上層傳來的亂數 Tag (回傳時使用)
 RX_BUF               .DS     32  ; 存放收到的 [Tag, Mode, Cmd, Data...] (上限 16 bytes)
-; <---RTC Warm reset 專用變數 --->
+;(Warm Reset 時保留不歸零)
 RTC_TICK             .DS     1   ; 記錄累積了幾秒的 RTC 中斷尚未處理
 CAL_YEAR_L           .DS     1   ; 西元年低位元 (例如 2026 = 07EAh -> L=EAh)
 CAL_YEAR_H           .DS     1   ; 西元年高位元 (例如 2026 = 07EAh -> H=07h)
@@ -53,7 +67,7 @@ CAL_SEC              .DS     1   ; 秒數 (0 ~ 59)
 CAL_WEEK             .DS     1   ; 星期幾 (0=週日, 1=週一 ... 6=週六)
 TEMP_Y_L             .DS     1   ; 世紀年
 TEMP_Y_H             .DS     1   ; 世紀年
-; <---ADC 運算VDD專用變數 --->
+;(ADC VDD 變數)
 ADC_RAW_L            .DS     1   ; ADC 12-bit 轉換結果低位元 (ADCDL)
 ADC_RAW_H            .DS     1   ; ADC 12-bit 轉換結果高位元 (ADCDH0)
 VDD_INT              .DS     1   ; 算出的 VDD 整數部分 (例如 3V -> 03h)
@@ -64,6 +78,7 @@ MATH_H               .DS     1   ; 24-bit 運算暫存器 (High)
 TEMP_R_L             .DS     1   ; 移位乘法暫存 (Low)
 TEMP_R_M             .DS     1   ; 移位乘法暫存 (Mid)
 TEMP_R_H             .DS     1   ; 移位乘法暫存 (High)
+
 ; <---ADC 10 次平均濾波專用變數 --->
 ADC_CNT              .DS     1   ; 採樣次數計數器 (預設 10 次)
 SUM_L                .DS     1   ; 10 次總和暫存 (低位元)
@@ -92,42 +107,46 @@ VDD_LOCK_FLAG         .DS     1   ; 1 = 目前處於 >4.2V 過壓狀態，等待
 ; --- 記憶體配置 ---	; FA277 17K Flash 起始位址
 ;======================================================================
     .ORG    BC00H
+
 ; ==============================================================================
 ; 系統啟動與重置 (System Reset)
 ; ==============================================================================
+
 reset:  ;Main program start here
     SEI
     LDX #FFh
     TAX ;Initial stack point
+
     ; ---------------------------------------------------
     ; 1. 讀取並暫存重置旗標 RST_SRF0 RST_SRF1
     ; ---------------------------------------------------
     LDA RST_SRF0            ; 讀取 RST_SRF0 (0x3015)
-    STA RAM00               ; 備份到 RAM00 
+    STA RAM00               ; 備份到 RAM00 用意:後續 SFR 被清除後查不到死因
 	LDA RST_SRF1            ; 讀取 RST_SRF1 (0x3016)
-    STA RAM01               ; 備份到 RAM01 
-
+    STA RAM01               ; 備份到 RAM01 用意:後續 SFR 被清除後查不到死因
+	
 	LDA #PWPR_Key           ;解除寫保護機制
 	STA PWPR
     LDA #FFh                
-    STA RST_SRF0            ; 將硬體旗標全部清零(寫1清零)
-
+    STA RST_SRF0            ; 將硬體旗標全部清零
+	
 	LDA #PWPR_Key           ;解除寫保護機制
 	STA PWPR
 	LDA #FFh                
-    STA RST_SRF1            ; 將硬體旗標全部清零(寫1清零)
-
+    STA RST_SRF1            ; 將硬體旗標全部清零
+	
+	
 	; ---------------------------------------------------
     ; 2. 優先初始化硬體 (為了能馬上使用 UART)
     ; ---------------------------------------------------
     JSR INIT_IO_PORTS       
     JSR INIT_UART
     ; ---------------------------------------------------
-    ; UART 印出重置旗標 (例如 "RST(RAM00)=80\r\n")
+    ; 3. UART 印出重置旗標 (例如 "RST(RAM00)=80\r\n")
     ; ---------------------------------------------------
     ;JSR PRINT_RST_FLAG
 	; ---------------------------------------------------
-    ; 3. 逐一判定重置來源 (依優先級)
+    ; 4. 逐一判定重置來源 (依優先級)
     ; ---------------------------------------------------
 CHECK_POF:
     LDA RAM00
@@ -139,7 +158,7 @@ CHECK_EXRF:
     BNE COLD_BOOT_FLOW      ; 若為外部手動重置，冷開機
 CHECK_SWRF:
     LDA RAM00
-    AND #20h                ; 假設 Bit 5 為 SWRF (software Reset / 軟體重置)
+    AND #20h                ; 假設 Bit 4 為 SWRF (software Reset / 軟體重置)
     BNE WARM_BOOT_FLOW      ; 暖開機
 CHECK_WRF:
     LDA RAM00
@@ -154,35 +173,36 @@ WARM_BOOT_FLOW:    ;warm reset
     JSR CLEAR_WDT               ; 餵狗
     ; <--- Warm Reset 後 SFR 會被硬體歸零，需重新配置周邊與開啟中斷 --->
     JSR INIT_ILRCO_in_stop_mode 
-    JSR INIT_ADC
-    JSR INIT_RTC
-    JSR INIT_AC0
-    JSR INIT_BOD1
+	JSR INIT_ADC
+	JSR INIT_RTC
+	JSR INIT_AC0
+	JSR INIT_BOD1
     LDA #00h
     STA WAKEUP_FLAG
     STA RX_READY
     CLI                         ; 重新開啟全域中斷
     JMP main_loop
-
+	
 COLD_BOOT_FLOW:    ;cold reset
-    ; <--- Cold reset 後清除 RAM 狀態旗標 --->
-    LDA #00h
+	; <--- 冷開機清除 RAM 狀態旗標 --->
+	LDA #00h
     STA WAKEUP_FLAG
-    STA AC0_WAKE_FLAG
-    STA OT_LOCK_FLAG
-    STA BOD1_WAKE_FLAG
-    STA VDD_LOCK_FLAG
+	STA AC0_WAKE_FLAG           
+    STA OT_LOCK_FLAG            
+	STA BOD1_WAKE_FLAG          
+    STA VDD_LOCK_FLAG           
     STA RX_READY
+    STA P1_BUF
     STA RTC_TICK
-
-    LDA #01h                    ; <--- 預設從「大電流檔」開始
+	
+	LDA #01h                    ; <--- 預設從「大電流檔」開始
     STA NTC_MODE
-
-    ; 備份上電時原本的 OR08 數值供後續恢復使用
+	
+	; 備份上電時原本的 OR08 數值供後續恢復使用
     LDA OR08
     STA DEFAULT_OR08
-    
-    ; <--- 冷開機初始化萬年曆預設時間 (以 MAIN.c 的 2022/4/8 16:08:50 週五 為例) --->
+	
+	; <--- 冷開機初始化萬年曆預設時間 (以 MAIN.c 的 2022/4/8 16:08:50 週五 為例) --->
     LDA #EAh                    ; 2026 = 07EAh (低位元 EAh)
     STA CAL_YEAR_L
     LDA #07h                    ; 2026 高位元 07h
@@ -199,21 +219,23 @@ COLD_BOOT_FLOW:    ;cold reset
     STA CAL_SEC
     LDA #01h                    ; 星期
     STA CAL_WEEK
-
-    JSR INIT_IO_PORTS
-    JSR INIT_UART
-    JSR INIT_ILRCO_in_stop_mode
-    JSR INIT_ADC
-    JSR INIT_RTC
-    JSR INIT_WDT
-    JSR INIT_AC0
-    JSR INIT_BOD1
-
-CLI
-
+	
+	
+	JSR INIT_IO_PORTS
+	JSR INIT_UART
+	JSR INIT_ILRCO_in_stop_mode
+	JSR INIT_ADC
+	JSR INIT_RTC
+	JSR INIT_WDT
+	JSR INIT_AC0
+	JSR INIT_BOD1
+	CLI
+	;LDA #5Ah ; 'z'
+    ;JSR UART_SEND_BYTE
+	
 main_loop:
     JSR CLEAR_WDT
-
+	
 CHECK_RTC_LOOP:
     LDA RTC_TICK
     BEQ CHECK_BOD1_WAKE         ; <--- 秒數更新完後，先檢查是否為 BOD1 過溫喚醒
@@ -234,7 +256,7 @@ CHECK_BOD1_WAKE:
     LDA #MY_DEV_ID              
     STA RX_BUF+1                ; RX_BUF[1] = 01h (Device ID)
     LDA #02h                   
-    STA RX_BUF+2                ; RX_BUF[2] = 02h (Command，也可改為 02h 區分)
+    STA RX_BUF+2                ; RX_BUF[2] = 01h (Command，也可改為 02h 區分)
 
     ; 取樣 RTC + IVR14 + VDD + NTC 並填入 RX_BUF+3 ~ +16
     JSR FILL_CALENDAR_RESP
@@ -255,8 +277,8 @@ CHECK_AC0_WAKE:
     STA RX_BUF                  ; RX_BUF[0] = Tag
     LDA #MY_DEV_ID              
     STA RX_BUF+1                ; RX_BUF[1] = 01h (Device ID)
-    LDA #03h                   
-    STA RX_BUF+2                ; RX_BUF[2] = 03h (Command)
+    LDA #01h                   
+    STA RX_BUF+2                ; RX_BUF[2] = 01h (Command)
 
     ; 取樣 RTC + IVR14 + VDD + NTC 並填入 RX_BUF+3 ~ +16
     JSR FILL_CALENDAR_RESP
@@ -265,9 +287,11 @@ CHECK_AC0_WAKE:
     ; 傳送完畢，直接準備進入休眠
     JMP SLEEP_AGAIN
 
+
 CHECK_UART_WAKE:
     LDA WAKEUP_FLAG
-    BEQ GO_SLEEP                ; 若不是被 UART 喚醒的 (純粹是RTC 醒來更新秒數)，回去休眠
+    BEQ GO_SLEEP                ; 若不是被 UART 喚醒的 (純粹是 RTC 醒來更新秒數)，立刻回去睡覺！
+	
 	CLD
 ; ===================================================
     ; 階段 1：等待 55h (第一個 FF 已作為喚醒信號消耗掉)
@@ -371,7 +395,6 @@ SLEEP_AGAIN:
 GO_SLEEP:
     JSR PREPARE_SLEEP           ; 關 UART、開 INT2、進 STOP
     JMP main_loop 
-;Main program end
 ; =====================================================
 ; 透過 UART 接收到的 00h 指令封包來更新萬年曆時間
 ; 封包格式：FF 55 Length Tag ID Cmd(00) 年H 年L 月 日 時 分 秒 週 [CheckSum]
@@ -397,6 +420,7 @@ UPDATE_RTC_FROM_UART:
     ; 清除 RTC_TICK，避免剛寫入新時間後，前一次休眠殘留的秒數又觸發進位
     LDA #00h
     STA RTC_TICK
+    
     RTS
 	
 ; =====================================================
@@ -493,13 +517,16 @@ INIT_ADC:
     STA MCK_CTL
 
     ; 2. 設定 ADCFG0：時脈 = SYSCLK/2 (ADC_SYSCLKD2) + 向右對齊 (ADRJ)
-    LDA ADCFG0
-    ORA #30h
+    ;LDA #ADC_SYSCLKD2
+    ;ORA #ADC_RightJustified
+	LDA ADCFG0
+	ORA #30h
     STA ADCFG0
 
     ; 3. 設定 ADCFG1：最高轉換功耗 (ADC_HighestPower)
+    ;LDA #ADC_HighestPower
     LDA ADCFG1
-    AND #3Fh
+	AND #3Fh
     STA ADCFG1
 
     ; 4. 預設先關閉 ADC 省電，等要量測時再開啟
@@ -1673,7 +1700,7 @@ CHECK_BOD1:
     STA VDD_LOCK_FLAG           ; 進入過壓鎖定狀態 (對應封包 RX_BUF+15 的 Bit 4 檢查點會變 1)
 	
 ; ---------------------------------------------------
-    ; 5. 檢查 AC0 過溫中斷 (Bit 5: AC0RF)
+    ; 4. 檢查 AC0 過溫中斷 (Bit 5: AC0RF)
     ; ---------------------------------------------------
 CHECK_AC0:
     ; 若目前已經處於過溫鎖定狀態 (OT_LOCK_FLAG != 0)，
