@@ -101,6 +101,11 @@ DEFAULT_OR08         .DS     1   ; 用來備份上電時原本的 OR08 預設值
 ; <--- BOD1 過高壓喚醒專用變數 --->
 BOD1_WAKE_FLAG        .DS     1   ; 1 = VDD 超過 4.2V，需主動回傳 UART
 VDD_LOCK_FLAG         .DS     1   ; 1 = 目前處於 >4.2V 過壓狀態，等待降壓後重開中斷
+
+; <--- IAP 雙 Page 紀錄與 P1.3 1秒計時變數 --->
+IAP_PTR_L             .DS     1   ; IAP 尋址指標 (低位元)
+IAP_PTR_H             .DS     1   ; IAP 尋址指標 (高位元)
+P13_HOLD_CNT          .DS     1   ; P1.3 High 維持秒數計數器
     .ENDS
 
 ;======================================================================
@@ -116,7 +121,6 @@ reset:  ;Main program start here
     SEI
     LDX #FFh
     TAX ;Initial stack point
-
     ; ---------------------------------------------------
     ; 1. 讀取並暫存重置旗標 RST_SRF0 RST_SRF1
     ; ---------------------------------------------------
@@ -191,6 +195,7 @@ COLD_BOOT_FLOW:    ;cold reset
     STA OT_LOCK_FLAG            
 	STA BOD1_WAKE_FLAG          
     STA VDD_LOCK_FLAG           
+	STA P13_HOLD_CNT
     STA RX_READY
     STA P1_BUF
     STA RTC_TICK
@@ -260,7 +265,9 @@ CHECK_BOD1_WAKE:
 
     ; 取樣 RTC + IVR14 + VDD + NTC 並填入 RX_BUF+3 ~ +16
     JSR FILL_CALENDAR_RESP
-    ; 透過 UART 主動將封包傳送出去
+	; 拉高 P1.3 通知外部 (維持 1 秒)
+    JSR TRIGGER_P13_HIGH_1S
+	; 透過 UART 主動將封包傳送出去
     JSR SEND_RESPONSE_WITH_TAG
     ; 傳送完畢，直接準備進入休眠
     JMP SLEEP_AGAIN
@@ -282,6 +289,8 @@ CHECK_AC0_WAKE:
 
     ; 取樣 RTC + IVR14 + VDD + NTC 並填入 RX_BUF+3 ~ +16
     JSR FILL_CALENDAR_RESP
+	; 拉高 P1.3 通知外部 (維持 1 秒)
+    JSR TRIGGER_P13_HIGH_1S
     ; 透過 UART 主動將 17 Bytes 封包傳送出去
     JSR SEND_RESPONSE_WITH_TAG
     ; 傳送完畢，直接準備進入休眠
@@ -395,6 +404,16 @@ SLEEP_AGAIN:
 GO_SLEEP:
     JSR PREPARE_SLEEP           ; 關 UART、開 INT2、進 STOP
     JMP main_loop 
+; =====================================================
+; 將 P1.3 拉 High 並設定維持 1 秒計時
+; (設定計數為 2：確保跨越當下殘餘秒數，至少維持完整 1.0 ~ 1.9 秒的 High 脈波)
+; =====================================================
+TRIGGER_P13_HIGH_1S:
+    LDA #0FFh                   ; 將 P1.3 設為 High (Bit 3 = 1)
+    STA P1_DAT
+    LDA #02h                    ; 設定倒數 2 次 RTC Tick (保證 >= 1 秒)
+    STA P13_HOLD_CNT
+    RTS
 ; =====================================================
 ; 透過 UART 接收到的 00h 指令封包來更新萬年曆時間
 ; 封包格式：FF 55 Length Tag ID Cmd(00) 年H 年L 月 日 時 分 秒 週 [CheckSum]
@@ -1101,6 +1120,15 @@ PACK_NTC_DONE:
 ; =====================================================
 UPDATE_CALENDAR:
     CLD
+	; --- 檢查 P1.3 告警輸出是否滿 1 秒需拉回 Low ---
+    LDA P13_HOLD_CNT
+    BEQ DO_SEC_INC              ; 若為 0，P1.3 已在 Low，直接算秒數
+    DEC P13_HOLD_CNT            ; 倒數 1 秒
+    BNE DO_SEC_INC              ; 若還沒歸零，繼續維持 High
+    LDA #0F7h                   ; 計數歸零了！將 P1.3 拉回 Low (Bit 3 = 0)
+    STA P1_DAT
+
+DO_SEC_INC:
     ; 1. 秒進位 (0 ~ 59)
     INC CAL_SEC
     LDA CAL_SEC
@@ -1337,6 +1365,10 @@ SEND_PAYLOAD_LOOP:
 ; 初始化 IO 狀態
 ; =====================================================
 INIT_IO_PORTS:
+
+    ;<--- 將 P1.3 拉 Low (清除 Bit 3) --->
+    LDA #F7h                   ; 1111_0111B (P1.3 = 0)
+    STA P1_DAT
     ; Initial GPIO to PP mode
     ; 54h = 0101 0100B -> 將 P1.3, P1.2, P1.1  設為 01 (Push-Pull 推輓輸出) P1.0 設為 00 (AIO)
     LDA #50h
